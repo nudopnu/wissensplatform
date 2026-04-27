@@ -191,6 +191,13 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
         this.controls.maxDistance = 8;
         this.controls.update();
 
+        this.controls.addEventListener('change', () => {
+            const offset = this.camera.position.clone().sub(this.controls.target);
+            const sph = new THREE.Spherical().setFromVector3(offset);
+            const { x, y, z } = this.controls.target;
+            console.log({ azimuth: sph.theta, polar: sph.phi, radius: sph.radius, offset: { x, y, z } });
+        });
+
         this.grid = new THREE.GridHelper(6, 24, 0x001a33, 0x000d1a);
         this.scene.add(this.grid);
 
@@ -322,8 +329,8 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
             this.scene.add(model);
             const names: string[] = [];
             model.traverse((child) => {
-                 if (child instanceof THREE.Mesh) return;
-                 names.push(child.name);
+                if (child instanceof THREE.Mesh) return;
+                names.push(child.name);
             });
             console.log(names);
         });
@@ -331,43 +338,48 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
 
     private animate(): void {
         this.animFrameId = requestAnimationFrame(() => this.animate());
+
+        if (this.isLerping && this.targetPosition) {
+            const time = performance.now();
+            const dt = (time - this.lastTime) / 1000;
+            const t = 1 - Math.exp(-10 * dt);
+            this.lastTime = time;
+
+            const offset = this.camera.position.clone().sub(this.controls.target);
+            const spherical = new THREE.Spherical().setFromVector3(offset);
+
+            const { azimuth, polar, radius, offset: poi } = this.targetPosition;
+
+            if (poi) {
+                this.controls.target.lerp(new THREE.Vector3(poi.x, poi.y, poi.z), t);
+            }
+
+            // shortest-path lerp for theta to avoid going the wrong way around
+            const dTheta = azimuth - spherical.theta;
+            const shortDTheta = dTheta - Math.round(dTheta / (2 * Math.PI)) * (2 * Math.PI);
+            spherical.theta = spherical.theta + shortDTheta * t;
+            spherical.phi = THREE.MathUtils.lerp(spherical.phi, polar, t);
+            spherical.radius = THREE.MathUtils.lerp(spherical.radius, radius, t);
+
+            spherical.phi = Math.max(0.01, Math.min(Math.PI - 0.01, spherical.phi));
+
+            offset.setFromSpherical(spherical);
+            this.camera.position.copy(this.controls.target).add(offset);
+
+            const EPS = 0.0005;
+            const targetOffset = new THREE.Vector3()
+                .setFromSpherical(new THREE.Spherical(
+                    spherical.radius,
+                    polar,
+                    azimuth
+                ));
+            const currentOffset = this.camera.position.clone().sub(this.controls.target);
+            if (currentOffset.distanceTo(targetOffset) < EPS) {
+                this.isLerping = false;
+            }
+        }
+
         this.controls.update();
         this.composer.render();
-
-        if (!this.isLerping || !this.targetPosition) return;
-
-        const time = performance.now();
-        const dt = (time - this.lastTime) / 100;
-        const t = 1 - Math.exp(-2 * dt);
-        this.lastTime = time;
-
-        const offset = this.camera.position.clone().sub(this.controls.target);
-        const spherical = new THREE.Spherical().setFromVector3(offset);
-
-        const { azimuth, polar } = this.targetPosition;
-
-        // interpolate angles
-        spherical.theta = THREE.MathUtils.lerp(spherical.theta, azimuth, t);
-        spherical.phi = THREE.MathUtils.lerp(spherical.phi, polar, t);
-
-        // clamp polar to avoid flip
-        spherical.phi = Math.max(0.01, Math.min(Math.PI - 0.01, spherical.phi));
-
-        // apply back
-        offset.setFromSpherical(spherical);
-        this.camera.position.copy(this.controls.target).add(offset);
-
-        // check if reached
-        const EPS = 0.0005;
-        const targetOffset = new THREE.Vector3()
-            .setFromSpherical(new THREE.Spherical(
-                spherical.radius,
-                polar,   // phi (Polarwinkel, von Y-Achse)
-                azimuth  // theta (Azimutwinkel, um Y-Achse)
-            ));
-        const currentOffset = this.camera.position.clone().sub(this.controls.target);
-        if (currentOffset.distanceTo(targetOffset) < EPS) {
-            this.isLerping = false;
-        }
     }
 }
