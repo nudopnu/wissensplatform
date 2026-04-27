@@ -366,7 +366,7 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
             offset.setFromSpherical(spherical);
             this.camera.position.copy(this.controls.target).add(offset);
 
-            const EPS = 0.0005;
+            const EPS = 0.05;
             const targetOffset = new THREE.Vector3()
                 .setFromSpherical(new THREE.Spherical(
                     spherical.radius,

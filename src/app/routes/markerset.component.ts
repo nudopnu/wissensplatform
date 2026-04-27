@@ -6,7 +6,7 @@ import { CameraPosition } from "../models/cameraposition";
     host: { class: 'grow flex relative' },
     template: `
 <human [cameraPosition]="cameraPos()" />
-<aside class="absolute right-1">
+<aside class="absolute right-1 p-4">
     <button class="btn" (click)="onclick()">Camera</button>
 </aside>
     `,
