@@ -320,6 +320,12 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
         loader.load('markersonly.glb', (gltf) => {
             const model = gltf.scene;
             this.scene.add(model);
+            const names: string[] = [];
+            model.traverse((child) => {
+                 if (child instanceof THREE.Mesh) return;
+                 names.push(child.name);
+            });
+            console.log(names);
         });
     }
 
