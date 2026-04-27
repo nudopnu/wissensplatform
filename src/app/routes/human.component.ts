@@ -193,6 +193,9 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
         this.composer.addPass(new RenderPass(this.scene, this.camera));
         this.bloom = new UnrealBloomPass(new THREE.Vector2(w, h), 0.2, 0.6, 0.1);
         this.composer.addPass(this.bloom);
+
+        // const box = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshStandardMaterial({ color: 0x00ff00, transparent: true, opacity: 0.5 }));
+        // this.scene.add(box);
     }
 
     private initMaterials(): void {

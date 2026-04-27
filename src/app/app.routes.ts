@@ -1,9 +1,8 @@
 import { Routes } from '@angular/router';
-import { RootComponent } from './root.component';
 import { HomeComponent } from './routes/home.component';
-import { HumanComponent } from './routes/human.component';
+import { MarkersetComponent } from './routes/markerset.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
-    { path: 'markersets', component: HumanComponent },
+    { path: 'markerset', component: MarkersetComponent },
 ];

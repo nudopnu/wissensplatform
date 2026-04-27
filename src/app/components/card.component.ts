@@ -27,6 +27,6 @@ export class CardComponent {
     tes = inject(Router);
 
     onclick() {
-        this.tes.navigate(["/markersets"]);
+        this.tes.navigate(["/markerset"]);
     }
 }
