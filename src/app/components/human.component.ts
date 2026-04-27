@@ -5,6 +5,7 @@ import {
     ElementRef,
     HostListener,
     inject,
+    input,
     OnDestroy,
     ViewChild,
 } from '@angular/core';
@@ -15,6 +16,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { ThemeService } from '../../theme.service';
+import { CameraPosition } from '../models/cameraposition';
 
 type ViewMode = 'fresnel' | 'lit';
 
@@ -49,6 +51,7 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
     viewMode: ViewMode = 'lit';
     isRotating = false;
     darkMode = inject(ThemeService).darkMode;
+    cameraPosition = input<CameraPosition>();
 
     private scene!: THREE.Scene;
     private camera!: THREE.PerspectiveCamera;
@@ -58,6 +61,9 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
     private bloom!: UnrealBloomPass;
     private grid!: THREE.GridHelper;
     private animFrameId = 0;
+    private isLerping = false;
+    private targetPosition?: CameraPosition;
+    private lastTime = 0;
 
     private skinMeshes: THREE.Mesh[] = [];
     private boneMeshes: THREE.Mesh[] = [];
@@ -75,6 +81,12 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
             const isDark = this.darkMode();
             this.applyMode(isDark ? 'fresnel' : 'lit');
         });
+        effect(() => {
+            const pos = this.cameraPosition();
+            this.lastTime = performance.now();
+            this.isLerping = true;
+            this.targetPosition = pos;
+        })
     }
 
     btnClass(mode: ViewMode): string {
@@ -90,7 +102,7 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
         this.initMaterials();
         this.applyMode(this.viewMode);
         this.loadModel();
-        this.animate();
+        requestAnimationFrame(() => this.animate());
     }
 
     ngOnDestroy(): void {
@@ -117,7 +129,7 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
 
         this.viewMode = mode;
         const isFresnel = mode === 'fresnel';
-        this.bloom.strength = isFresnel ? 0.8 : 0;
+        this.bloom.strength = isFresnel ? 0.2 : 0;
 
         this.scene.background = new THREE.Color(isFresnel ? 0x1d232a : 0xffffff);
 
@@ -306,5 +318,41 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
         this.animFrameId = requestAnimationFrame(() => this.animate());
         this.controls.update();
         this.composer.render();
+
+        if (!this.isLerping || !this.targetPosition) return;
+
+        const time = performance.now();
+        const dt = (time - this.lastTime) / 1000;
+        const t = 1 - Math.exp(-5 * dt);
+        this.lastTime = time;
+
+        const offset = this.camera.position.clone().sub(this.controls.target);
+        const spherical = new THREE.Spherical().setFromVector3(offset);
+
+        const { azimuth, polar } = this.targetPosition;
+
+        // interpolate angles
+        spherical.theta = THREE.MathUtils.lerp(spherical.theta, azimuth, t);
+        spherical.phi = THREE.MathUtils.lerp(spherical.phi, polar, t);
+
+        // clamp polar to avoid flip
+        spherical.phi = Math.max(0.01, Math.min(Math.PI - 0.01, spherical.phi));
+
+        // apply back
+        offset.setFromSpherical(spherical);
+        this.camera.position.copy(this.controls.target).add(offset);
+
+        // check if reached
+        const EPS = 0.0005;
+        const targetOffset = new THREE.Vector3()
+            .setFromSpherical(new THREE.Spherical(
+                spherical.radius,
+                polar,   // phi (Polarwinkel, von Y-Achse)
+                azimuth  // theta (Azimutwinkel, um Y-Achse)
+            ));
+        const currentOffset = this.camera.position.clone().sub(this.controls.target);
+        if (currentOffset.distanceTo(targetOffset) < EPS) {
+            this.isLerping = false;
+        }
     }
 }
