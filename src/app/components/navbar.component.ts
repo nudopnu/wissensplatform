@@ -1,5 +1,6 @@
 import { Component, effect, inject, input, signal } from "@angular/core";
 import { Router, RouterLink } from "@angular/router";
+import { ThemeService } from "../../theme.service";
 
 @Component({
   selector: "navbar",
@@ -42,18 +43,7 @@ import { Router, RouterLink } from "@angular/router";
   imports: [RouterLink],
 })
 export class NavbarComponent {
-  darkMode = signal(false);
+  darkMode = inject(ThemeService).darkMode;
   title = input<string>();
   router = inject(Router);
-
-  constructor() {
-    effect(() => {
-      const isDark = this.darkMode();
-
-      document.documentElement.setAttribute(
-        'data-theme',
-        isDark ? 'dark' : 'light'
-      );
-    })
-  }
 }

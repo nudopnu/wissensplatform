@@ -1,8 +1,10 @@
 import {
     AfterViewInit,
     Component,
+    effect,
     ElementRef,
     HostListener,
+    inject,
     OnDestroy,
     ViewChild,
 } from '@angular/core';
@@ -12,6 +14,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { ThemeService } from '../../theme.service';
 
 type ViewMode = 'fresnel' | 'lit';
 
@@ -28,8 +31,6 @@ type ViewMode = 'fresnel' | 'lit';
 
     <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
       <div class="flex gap-2">
-        <button [class]="btnClass('fresnel')" (click)="applyMode('fresnel')">FRESNEL</button>
-        <button [class]="btnClass('lit')"     (click)="applyMode('lit')">LIT</button>
         <button [class]="rotateBtnClass()"    (click)="toggleRotate()">ROTATE: {{ isRotating ? 'ON' : 'OFF' }}</button>
       </div>
       @if (viewMode === 'fresnel') {
@@ -42,11 +43,12 @@ type ViewMode = 'fresnel' | 'lit';
   `,
 })
 export class HumanComponent implements AfterViewInit, OnDestroy {
-    @ViewChild('viewer')  private viewerRef!:  ElementRef<HTMLDivElement>;
+    @ViewChild('viewer') private viewerRef!: ElementRef<HTMLDivElement>;
     @ViewChild('loading') private loadingRef!: ElementRef<HTMLDivElement>;
 
-    viewMode: ViewMode = 'fresnel';
+    viewMode: ViewMode = 'lit';
     isRotating = false;
+    darkMode = inject(ThemeService).darkMode;
 
     private scene!: THREE.Scene;
     private camera!: THREE.PerspectiveCamera;
@@ -64,9 +66,16 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
     private litSkinMat!: THREE.MeshStandardMaterial;
     private litBoneMat!: THREE.MeshStandardMaterial;
 
-    private readonly BASE_BTN  = 'py-[0.4rem] px-4 border border-[#004466] cursor-pointer font-mono tracking-[0.05em]';
-    private readonly ACTIVE_BTN   = 'bg-[#004466] text-white';
+    private readonly BASE_BTN = 'py-[0.4rem] px-4 border border-[#004466] cursor-pointer font-mono tracking-[0.05em]';
+    private readonly ACTIVE_BTN = 'bg-[#004466] text-white';
     private readonly INACTIVE_BTN = 'bg-[#001122] text-[#aad4ff]';
+
+    constructor() {
+        effect(() => {
+            const isDark = this.darkMode();
+            this.applyMode(isDark ? 'fresnel' : 'lit');
+        });
+    }
 
     btnClass(mode: ViewMode): string {
         return `${this.BASE_BTN} ${this.viewMode === mode ? this.ACTIVE_BTN : this.INACTIVE_BTN}`;
@@ -79,6 +88,7 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
     ngAfterViewInit(): void {
         this.initScene();
         this.initMaterials();
+        this.applyMode(this.viewMode);
         this.loadModel();
         this.animate();
     }
@@ -103,6 +113,8 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
     }
 
     applyMode(mode: ViewMode): void {
+        if (!this.scene) return;   // not yet initialized
+
         this.viewMode = mode;
         const isFresnel = mode === 'fresnel';
         this.bloom.strength = isFresnel ? 0.8 : 0;
@@ -274,6 +286,7 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
                 });
 
                 this.scene.add(model);
+                this.applyMode(this.viewMode);
                 const el = this.loadingRef.nativeElement;
                 el.classList.add('opacity-0', 'pointer-events-none');
                 setTimeout(() => el.remove(), 700);
