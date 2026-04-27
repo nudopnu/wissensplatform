@@ -102,6 +102,7 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
         this.initMaterials();
         this.applyMode(this.viewMode);
         this.loadModel();
+        this.load_markers();
         requestAnimationFrame(() => this.animate());
     }
 
@@ -314,6 +315,14 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
         );
     }
 
+    load_markers() {
+        const loader = new GLTFLoader();
+        loader.load('markersonly.glb', (gltf) => {
+            const model = gltf.scene;
+            this.scene.add(model);
+        });
+    }
+
     private animate(): void {
         this.animFrameId = requestAnimationFrame(() => this.animate());
         this.controls.update();
@@ -322,8 +331,8 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
         if (!this.isLerping || !this.targetPosition) return;
 
         const time = performance.now();
-        const dt = (time - this.lastTime) / 1000;
-        const t = 1 - Math.exp(-5 * dt);
+        const dt = (time - this.lastTime) / 100;
+        const t = 1 - Math.exp(-2 * dt);
         this.lastTime = time;
 
         const offset = this.camera.position.clone().sub(this.controls.target);

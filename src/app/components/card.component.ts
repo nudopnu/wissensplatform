@@ -7,16 +7,20 @@ import { Router } from "@angular/router";
     template: `
 <div class="card card-side shadow-sm cursor-pointer" (click)="onclick()">
     <figure class="max-w-lg">
-        <img [src]="'./' + card().img" alt="Movie" />
+        <img [src]="'./' + card().img" alt="Movie" loading="lazy" />
     </figure>
 
     <div class="card-body">
         <article class="prose leading-tight">
             <h2 class="card-title">{{ card().title }}</h2>
             <p>{{ card().description }}</p>
-            <ul>
-                <li><a class="link">Vicon GRAIL Workflow – Kalibrierung & Bewegungsanalyse</a></li>
-            </ul>
+            @if (card().sublinks) {
+                <ul>
+                    @for (sublink of card().sublinks; track $index) {
+                        <li><a class="link">Vicon GRAIL Workflow – Kalibrierung & Bewegungsanalyse</a></li>
+                    }
+                </ul>
+            }
         </article>
     </div>
 </div>

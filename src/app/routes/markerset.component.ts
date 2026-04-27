@@ -7,7 +7,7 @@ import { CameraPosition } from "../models/cameraposition";
     template: `
 <human [cameraPosition]="cameraPos()" />
 <aside class="absolute right-1">
-    <button class="btn" (click)="onclick()">asdas</button>
+    <button class="btn" (click)="onclick()">Camera</button>
 </aside>
     `,
     imports: [HumanComponent],

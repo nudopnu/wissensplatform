@@ -4,5 +4,5 @@ export type Card = {
     description: string;
     link: string;
     img: string;
-    sublinks?: Record<string, string>;
+    sublinks: { link: string, label: string }[];
 };

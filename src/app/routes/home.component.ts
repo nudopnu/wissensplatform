@@ -5,7 +5,7 @@ import { CardComponent } from "../components/card.component";
 @Component({
     imports: [CardComponent],
     template: `
-<main class="container mx-auto p-4 flex flex-col">
+<main class="container mx-auto p-4 flex flex-col gap-4">
     @for (card of cards; track $index) {
         <card [card]="card"></card>
     }
@@ -19,13 +19,14 @@ export class HomeComponent {
             description: "Anleitungen für die Verwendung des Gaited Realtime Analyses Labs (GRAIL).",
             link: "/",
             img: "grail.png",
-            sublinks: {},
+            sublinks: [],
         },
         {
             title: "Markersets",
             description: "Eine Hilfestellung für das Anbringen von Markern für verschiedene Körpermodelle",
-            img: "grail.png",
+            img: "markers.png",
             link: "/",
+            sublinks: [],
         }
     ]
 }
