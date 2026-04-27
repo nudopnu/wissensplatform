@@ -1,10 +1,11 @@
-import { Component, input } from "@angular/core";
+import { Component, inject, input } from "@angular/core";
 import { Card } from "../models/card";
+import { Router } from "@angular/router";
 
 @Component({
     selector: 'card',
     template: `
-<div class="card card-side shadow-sm cursor-pointer">
+<div class="card card-side shadow-sm cursor-pointer" (click)="onclick()">
     <figure class="max-w-lg">
         <img [src]="'./' + card().img" alt="Movie" />
     </figure>
@@ -23,4 +24,9 @@ import { Card } from "../models/card";
 })
 export class CardComponent {
     card = input.required<Card>();
+    tes = inject(Router);
+
+    onclick() {
+        this.tes.navigate(["/markersets"]);
+    }
 }

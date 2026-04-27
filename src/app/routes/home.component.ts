@@ -5,9 +5,11 @@ import { CardComponent } from "../components/card.component";
 @Component({
     imports: [CardComponent],
     template: `
-@for (card of cards; track $index) {
-    <card [card]="card"></card>
-}
+<main class="container mx-auto p-4 flex flex-col">
+    @for (card of cards; track $index) {
+        <card [card]="card"></card>
+    }
+</main>
     `,
 })
 export class HomeComponent {
