@@ -4,7 +4,7 @@ import { NavbarComponent } from './components/navbar.component';
 
 @Component({
   selector: 'app-root',
-  host: { class: 'flex flex-col h-dvh' },
+  host: { class: 'bg-base-200 flex flex-col h-dvh' },
   imports: [RouterOutlet, NavbarComponent],
   template: `
 <navbar title="IZIT Wissensplattform" />

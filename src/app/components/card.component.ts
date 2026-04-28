@@ -5,7 +5,7 @@ import { Router } from "@angular/router";
 @Component({
     selector: 'card',
     template: `
-<div class="card card-side shadow-sm cursor-pointer" (click)="onclick()">
+<div class="card card-side bg-base-100 shadow-sm cursor-pointer" (click)="onclick(card())">
     <figure class="max-w-lg">
         <img [src]="'./' + card().img" alt="Movie" loading="lazy" />
     </figure>
@@ -30,7 +30,8 @@ export class CardComponent {
     card = input.required<Card>();
     tes = inject(Router);
 
-    onclick() {
-        this.tes.navigate(["/markerset"]);
+    onclick(card: Card) {
+        console.log(card);
+        this.tes.navigate([card.link]);
     }
 }

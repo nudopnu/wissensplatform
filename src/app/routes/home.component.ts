@@ -25,8 +25,15 @@ export class HomeComponent {
             title: "Markersets",
             description: "Eine Hilfestellung für das Anbringen von Markern für verschiedene Körpermodelle",
             img: "markers.png",
-            link: "/",
+            link: "/markerset",
             sublinks: [],
-        }
+        },
+        {
+            title: "Plugin Gait Protokoll",
+            description: "Schritt-für-Schritt-Anleitung für das Plugin Gait Markerset — von der Patientenvorbereitung bis zur Datenerhebung.",
+            img: "markers.png",
+            link: "/instructions",
+            sublinks: [],
+        },
     ]
 }

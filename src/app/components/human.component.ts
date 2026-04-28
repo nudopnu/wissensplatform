@@ -67,10 +67,12 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
 
     private skinMeshes: THREE.Mesh[] = [];
     private boneMeshes: THREE.Mesh[] = [];
+    private boxersMeshes: THREE.Mesh[] = [];
     private skinFresnelMat!: THREE.ShaderMaterial;
     private boneFresnelMat!: THREE.ShaderMaterial;
     private litSkinMat!: THREE.MeshStandardMaterial;
     private litBoneMat!: THREE.MeshStandardMaterial;
+    private litBoxersMat!: THREE.MeshStandardMaterial;
 
     private readonly BASE_BTN = 'py-[0.4rem] px-4 border border-[#004466] cursor-pointer font-mono tracking-[0.05em]';
     private readonly ACTIVE_BTN = 'bg-[#004466] text-white';
@@ -143,6 +145,10 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
         for (const mesh of this.boneMeshes) {
             mesh.material = isFresnel ? this.boneFresnelMat : this.litBoneMat;
         }
+        for (const mesh of this.boxersMeshes) {
+            mesh.visible = !isFresnel;
+            mesh.material = this.litBoxersMat;
+        }
     }
 
     private rebuildGrid(centerColor: number, gridColor: number): void {
@@ -191,6 +197,7 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
         this.controls.maxDistance = 8;
         this.controls.update();
 
+        // For debug only
         this.controls.addEventListener('change', () => {
             const offset = this.camera.position.clone().sub(this.controls.target);
             const sph = new THREE.Spherical().setFromVector3(offset);
@@ -277,8 +284,9 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
             blending: THREE.AdditiveBlending,
         });
 
-        this.litSkinMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.55, metalness: 0.0 });
+        this.litSkinMat = new THREE.MeshStandardMaterial({ color: 0xf0f0f0, transparent: true, opacity: 0.8, roughness: 0.55, metalness: 0.0 });
         this.litBoneMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.55, metalness: 0.0 });
+        this.litBoxersMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6, metalness: 0.0 });
     }
 
     private loadModel(): void {
@@ -296,8 +304,13 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
 
                 model.traverse((child) => {
                     if (!(child instanceof THREE.Mesh)) return;
+                    
                     child.geometry.computeVertexNormals();
-                    if (child.name.startsWith('s_')) {
+                    if (child.name === 'boxers') {
+                        this.boxersMeshes.push(child);
+                        child.material = this.litBoxersMat;
+                        child.renderOrder = 0;
+                    } else if (child.name.startsWith('s_')) {
                         this.boneMeshes.push(child);
                         child.material = this.boneFresnelMat;
                         child.renderOrder = 0;
