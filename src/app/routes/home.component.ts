@@ -17,23 +17,20 @@ export class HomeComponent {
         {
             title: "GRAIL",
             description: "Anleitungen für die Verwendung des Gaited Realtime Analyses Labs (GRAIL).",
-            link: "/",
+            link: "/instructions",
             img: "grail.png",
-            sublinks: [],
+            sublinks: [
+                { label: "Ganzkörperaufzeichnung für die Ganganalyse", link: "/instructions" }
+            ],
         },
         {
             title: "Markersets",
             description: "Eine Hilfestellung für das Anbringen von Markern für verschiedene Körpermodelle",
             img: "markers.png",
             link: "/markerset",
-            sublinks: [],
-        },
-        {
-            title: "Plugin Gait Protokoll",
-            description: "Schritt-für-Schritt-Anleitung für das Plugin Gait Markerset — von der Patientenvorbereitung bis zur Datenerhebung.",
-            img: "markers.png",
-            link: "/instructions",
-            sublinks: [],
+            sublinks: [
+                { label: "Ganzkörpermodell (Plug-in Gait + vKAD)", link: "/markerset" },
+            ],
         },
     ]
 }

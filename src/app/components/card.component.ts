@@ -1,12 +1,12 @@
 import { Component, inject, input } from "@angular/core";
 import { Card } from "../models/card";
-import { Router } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 
 @Component({
     selector: 'card',
     template: `
 <div class="card card-side bg-base-100 shadow-sm cursor-pointer" (click)="onclick(card())">
-    <figure class="max-w-lg">
+    <figure class="flex-none basis-1/2">
         <img [src]="'./' + card().img" alt="Movie" loading="lazy" />
     </figure>
 
@@ -17,7 +17,7 @@ import { Router } from "@angular/router";
             @if (card().sublinks) {
                 <ul>
                     @for (sublink of card().sublinks; track $index) {
-                        <li><a class="link">Vicon GRAIL Workflow – Kalibrierung & Bewegungsanalyse</a></li>
+                        <li><a class="link" [routerLink]="sublink.link">{{ sublink.label }}</a></li>
                     }
                 </ul>
             }
@@ -25,6 +25,7 @@ import { Router } from "@angular/router";
     </div>
 </div>
     `,
+    imports: [RouterLink],
 })
 export class CardComponent {
     card = input.required<Card>();
