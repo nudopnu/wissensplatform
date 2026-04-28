@@ -7,14 +7,15 @@ import { LeafItemComponent } from './leaf-item.component';
     selector: 'app-macro-step',
     imports: [LeafItemComponent, MarkdownComponent],
     template: `
-        <details class="collapse collapse-arrow border border-base-300 bg-base-100" open>
-            <summary class="collapse-title py-3 min-h-0">
+        <div class="collapse collapse-arrow join-item border border-base-300 bg-base-100">
+            <input type="radio" name="steps-accordion" [checked]="num() === 1" />
+            <div class="collapse-title py-3 min-h-0">
                 <div class="flex items-center gap-3 pr-6">
                     <span class="badge badge-primary badge-sm font-mono shrink-0">{{ num() }}</span>
                     <span class="font-semibold text-sm flex-1">{{ step().title }}</span>
                     <span class="text-xs font-mono opacity-40 shrink-0">{{ stepChecked() }}/{{ stepTotal() }}</span>
                 </div>
-            </summary>
+            </div>
             <div class="collapse-content px-0 pb-2">
                 @for (mid of step().mids; track mid.id) {
                     @if (mid.title) {
@@ -40,7 +41,7 @@ import { LeafItemComponent } from './leaf-item.component';
                     }
                 }
             </div>
-        </details>
+        </div>
 
         <dialog #infoDialog class="modal">
             <div class="modal-box max-w-lg">

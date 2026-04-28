@@ -123,7 +123,7 @@ const MOCK_STEPS: MacroStep[] = [
 ];
 
 @Component({
-    host: { class: 'grow flex flex-col overflow-hidden' },
+    host: { class: 'grow container mx-auto flex flex-col overflow-hidden' },
     imports: [MacroStepComponent],
     template: `
         <header class="shrink-0 border-b border-base-300 px-6 py-3 flex items-center gap-4">
@@ -133,7 +133,7 @@ const MOCK_STEPS: MacroStep[] = [
             <progress class="progress progress-primary flex-1 max-w-xs" [value]="progress()" max="100"></progress>
             <span class="text-xs font-mono opacity-50 shrink-0">{{ checkedIds().size }} / {{ totalLeaves }}</span>
         </header>
-        <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-2">
+        <div class="join join-vertical flex-1 overflow-y-auto">
             @for (step of steps; track step.id; let i = $index) {
                 <app-macro-step
                     [step]="step"

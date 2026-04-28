@@ -13,7 +13,24 @@ export type Section = {
     host: { class: 'grow flex relative' },
     template: `
 <human [cameraPosition]="cameraPos()" />
-<aside class="absolute right-2 top-2 bottom-2 w-72 flex flex-col gap-4 bg-base-200/80 backdrop-blur-sm rounded-2xl p-5 shadow-xl">
+
+<!-- toggle tab -->
+<button
+    class="absolute top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-6 h-16 bg-base-200/80 backdrop-blur-sm rounded-l-xl transition-all duration-300"
+    [style.right]="drawerOpen() ? '18rem' : '0'"
+    (click)="drawerOpen.set(!drawerOpen())"
+>
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+        class="size-4 transition-transform duration-300" [class.rotate-180]="drawerOpen()">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+    </svg>
+</button>
+
+<!-- drawer -->
+<aside
+    class="absolute right-0 top-0 bottom-0 w-72 flex flex-col gap-4 bg-base-200/80 backdrop-blur-sm p-5 shadow-xl transition-transform duration-300"
+    [class.translate-x-full]="!drawerOpen()"
+>
     <h2 class="text-xl font-bold capitalize tracking-wide">{{ currentSection().title }}</h2>
     <section class="flex flex-col gap-2 overflow-y-auto flex-1 pr-1">
         @for (marker of sectionMarkers(); track $index) {
@@ -61,6 +78,7 @@ export class MarkersetComponent {
         { title: "Linkes Bein", name: "leg left", cameraPosition: this.positions[2] },
         { title: "Füße hinten", name: "foot back", cameraPosition: this.positions[4] },
     ];
+    drawerOpen = signal(true);
     cameraPos = signal<CameraPosition>({ azimuth: 0, polar: Math.PI / 2, radius: 4 });
     currentSection = signal<Section>(this.sections[0]);
     previousSection = computed(() => this.sections[(this.sections.indexOf(this.currentSection()) + this.sections.length - 1) % this.sections.length]);
