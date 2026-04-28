@@ -8,7 +8,7 @@ import { LeafItemComponent } from './leaf-item.component';
     imports: [LeafItemComponent, MarkdownComponent],
     template: `
         <div class="collapse collapse-arrow join-item border border-base-300 bg-base-100">
-            <input type="radio" name="steps-accordion" [checked]="num() === 1" />
+            <input type="radio" name="steps-accordion" [checked]="active()" />
             <div class="collapse-title py-3 min-h-0">
                 <div class="flex items-center gap-3 pr-6">
                     <span class="badge badge-primary badge-sm font-mono shrink-0">{{ num() }}</span>
@@ -63,6 +63,7 @@ import { LeafItemComponent } from './leaf-item.component';
 export class MacroStepComponent implements AfterViewInit {
     step = input.required<MacroStep>();
     num = input.required<number>();
+    active = input<boolean>(false);
     checkedIds = input<ReadonlySet<string>>(new Set());
     leafToggled = output<string>();
 
