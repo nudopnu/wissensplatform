@@ -2,18 +2,11 @@
 
 Interaktive Schritt-für-Schritt-Protokoll-App für klinische Bewegungsanalyse (Vicon PlugIn Gait). Inhalte werden aus Markdown-Dateien generiert und als Angular-App auf GitHub Pages bereitgestellt.
 
-## Branch-Struktur
-
-| Branch | Inhalt |
-|--------|--------|
-| `main` | Markdown-Inhalte, Medien-Assets und Parser-Skript |
-| `dev` | Angular-App (Quellcode, Build-Config) |
-
 Bei jedem Push auf `main` läuft automatisch eine GitHub Actions Pipeline:
 
 1. Markdown-Dateien in `content/` werden mit `parser.py` in `public/content/steps.json` konvertiert
 2. Medien-Dateien aus `content/info/` werden in `public/content/info/` kopiert
-3. Die Angular-App (Branch `dev`) wird gebaut und auf GitHub Pages veröffentlicht
+3. Die Angular-App wird gebaut und auf GitHub Pages veröffentlicht
 
 ## Inhalte bearbeiten
 
@@ -48,8 +41,8 @@ python parser.py content/plugin-gait.md
 # Ganzes content/-Verzeichnis parsen
 python parser.py content/
 
-# Direkt in die App synchronisieren (dev-Branch muss unter ../app liegen)
-python parser.py content/ --sync ../app
+# Direkt in die App synchronisieren (im Root des Repos ausführen)
+python parser.py content/ --sync .
 ```
 
 Die Ausgabe ist das `steps.json`, das die Angular-App per HTTP lädt. Struktur:
