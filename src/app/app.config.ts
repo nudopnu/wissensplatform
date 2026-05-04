@@ -12,7 +12,7 @@ renderer.image = ({ href, text }) => {
               <source src="${href}" type="video/${href.split('.').pop()}">
             </video>`;
   }
-  return `<img src="${href}" alt="${text}">`;
+  return `<img src="${href}" class="mx-auto" alt="${text}">`;
 };
 
 export const appConfig: ApplicationConfig = {

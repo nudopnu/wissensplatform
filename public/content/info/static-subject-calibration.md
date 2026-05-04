@@ -1,0 +1,1 @@
+Führt einen vollständigen Kinematic Fit durch und kalibriert die Gelenkmittelpunkte und Segmentlängen im VSK
