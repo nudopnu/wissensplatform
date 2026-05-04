@@ -39,8 +39,8 @@ jobs:
 
       - name: Copy info assets
         run: |
-          rm -rf app/public/info
-          cp -r content/info app/public/info
+          rm -rf app/public/content/info
+          cp -r content/info app/public/content/info
 
       - name: Set up Node
         uses: actions/setup-node@v4
