@@ -40,7 +40,7 @@ jobs:
       - name: Copy info assets
         run: |
           rm -rf app/public/content/info
-          cp -r content/info app/public/content/info
+          cp -r content/content/info app/public/content/info
 
       - name: Set up Node
         uses: actions/setup-node@v4
