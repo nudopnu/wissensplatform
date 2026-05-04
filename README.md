@@ -12,7 +12,7 @@ Interaktive Schritt-für-Schritt-Protokoll-App für klinische Bewegungsanalyse (
 Bei jedem Push auf `main` läuft automatisch eine GitHub Actions Pipeline:
 
 1. Markdown-Dateien in `content/` werden mit `parser.py` in `public/content/steps.json` konvertiert
-2. Medien-Dateien aus `info/` werden in `public/info/` kopiert
+2. Medien-Dateien aus `content/info/` werden in `public/content/info/` kopiert
 3. Die Angular-App (Branch `dev`) wird gebaut und auf GitHub Pages veröffentlicht
 
 ## Inhalte bearbeiten
@@ -33,7 +33,7 @@ Protokollschritte werden in `content/*.md` gepflegt:
   > Dieser Text erscheint direkt als **Markdown** im Info-Panel
 ```
 
-Medien-Dateien (Bilder, Videos, GIFs) gehören in den Ordner `info/`.
+Medien-Dateien (Bilder, Videos, GIFs) gehören in den Ordner `content/info/`.
 
 Markdown-Formatierung (fett, kursiv, `Code`, Links) ist in Schritt-Beschreibungen erlaubt.
 
@@ -48,8 +48,8 @@ python parser.py content/plugin-gait.md
 # Ganzes content/-Verzeichnis parsen
 python parser.py content/
 
-# Direkt in die App schreiben (dev-Branch muss ausgecheckt sein)
-python parser.py content/ > ../app/public/content/steps.json
+# Direkt in die App synchronisieren (dev-Branch muss unter ../app liegen)
+python parser.py content/ --sync ../app
 ```
 
 Die Ausgabe ist das `steps.json`, das die Angular-App per HTTP lädt. Struktur:
