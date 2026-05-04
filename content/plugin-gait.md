@@ -30,7 +30,7 @@
 
 ## Postprocessing
 
-- [ ] Mit geöffnetem ROM-Trial **Reconstruct** ausführen [i](info/reconstruct.png)
+- [ ] Mit geöffnetem ROM-Trial **Reconstruct** ausführen [i](info/reconstruct.md)
 - [ ] Die **AutoInitialize** Labeling-Pipeline ausführen [i](info/auto-initialize.md)
 - [ ] Start- und Endemarker (blaue Dreiecke) setzen, sodass sie die ersten Sekunden in der Anfangspose umfassen
 - [ ] **Process Static Subject Calibration** ausführen [i](info/static-subject-calibration.md)

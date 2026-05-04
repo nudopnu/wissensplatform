@@ -1,0 +1,1 @@
+Berechnet die Plug-in-Gait-spezifischen statischen Offsets (u. a. `StaticPlantFlex`, `StaticRotOff`) aus dem definierten statischen Frame und schreibt sie ins VSK; diese Werte sind Voraussetzung für das Dynamic Model.
