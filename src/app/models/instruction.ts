@@ -1,7 +1,12 @@
+export interface LeafInfo {
+    title?: string;
+    content: string;
+}
+
 export interface LeafStep {
     id: string;
-    title: string;
-    info?: string;
+    description: string;
+    info?: LeafInfo;
 }
 
 export interface MidStep {

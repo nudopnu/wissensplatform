@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, ViewChild, computed, input, output, signal } from '@angular/core';
 import { MarkdownComponent } from 'ngx-markdown';
-import { MacroStep } from '../models/instruction';
+import { LeafInfo, MacroStep } from '../models/instruction';
 import { LeafItemComponent } from './leaf-item.component';
 
 @Component({
@@ -45,6 +45,9 @@ import { LeafItemComponent } from './leaf-item.component';
 
         <dialog #infoDialog class="modal">
             <div class="modal-box max-w-3xl">
+                @if (selectedInfo()?.title) {
+                    <h3 class="font-semibold text-base mb-3">{{ selectedInfo()!.title }}</h3>
+                }
                 <div class="prose prose-sm max-w-none">
                     @if (infoLoading()) {
                         <div class="flex justify-center items-center py-12">
@@ -52,7 +55,7 @@ import { LeafItemComponent } from './leaf-item.component';
                         </div>
                     }
                     @if (selectedInfo()) {
-                        <markdown [data]="selectedInfo()!" (ready)="infoLoading.set(false)" />
+                        <markdown #md [data]="selectedInfo()!.content" [hidden]="infoLoading()" (ready)="onMarkdownReady()" />
                     }
                 </div>
                 <div class="modal-action mt-4">
@@ -76,8 +79,9 @@ export class MacroStepComponent implements AfterViewInit {
     infoLoading = signal(false);
 
     @ViewChild('infoDialog') private dialogRef!: ElementRef<HTMLDialogElement>;
+    @ViewChild('md') private markdownRef?: MarkdownComponent;
 
-    selectedInfo = signal<string | undefined>(undefined);
+    selectedInfo = signal<LeafInfo | undefined>(undefined);
     stepTotal = computed(() => this.step().mids.flatMap(m => m.leaves).length);
     stepChecked = computed(() => this.step().mids.flatMap(m => m.leaves).filter(l => this.checkedIds().has(l.id)).length);
 
@@ -85,10 +89,38 @@ export class MacroStepComponent implements AfterViewInit {
         this.dialogRef.nativeElement.addEventListener('close', () => this.selectedInfo.set(undefined));
     }
 
-    openInfo(info: string): void {
-        this.selectedInfo.set(undefined); // Markdown unmounten
+    openInfo(info: LeafInfo): void {
+        this.selectedInfo.set(undefined);
         this.infoLoading.set(true);
         this.selectedInfo.set(info);
         this.dialogRef.nativeElement.showModal();
+    }
+
+    onMarkdownReady(): void {
+        const el = this.markdownRef?.element?.nativeElement as HTMLElement | undefined;
+        if (!el) {
+            this.infoLoading.set(false);
+            return;
+        }
+
+        const images = Array.from(el.querySelectorAll<HTMLImageElement>('img')).filter(img => !img.complete);
+        const videos = Array.from(el.querySelectorAll<HTMLVideoElement>('video')).filter(v => v.readyState < 3);
+        const pending = [...images, ...videos];
+
+        if (pending.length === 0) {
+            this.infoLoading.set(false);
+            return;
+        }
+
+        let remaining = pending.length;
+        const done = () => { if (--remaining === 0) this.infoLoading.set(false); };
+        images.forEach(img => {
+            img.addEventListener('load', done, { once: true });
+            img.addEventListener('error', done, { once: true });
+        });
+        videos.forEach(v => {
+            v.addEventListener('loadeddata', done, { once: true });
+            v.addEventListener('error', done, { once: true });
+        });
     }
 }
