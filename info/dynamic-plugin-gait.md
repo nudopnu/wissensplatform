@@ -1,0 +1,1 @@
+Berechnet Kinematik und Kinetik (Gelenkkräfte, -momente, -leistungen) auf Basis der statischen Offsets aus dem VSK.

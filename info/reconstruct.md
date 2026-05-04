@@ -1,0 +1,1 @@
+Berechnet aus den 2D-Kamerabildern die 3D-Positionen aller sichtbaren Marker als unbenannte Trajektorien

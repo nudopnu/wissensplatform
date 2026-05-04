@@ -137,14 +137,52 @@ def parse_dir(content_dir: Path) -> list[dict]:
     all_macros: list[dict] = []
     for md_file in sorted(content_dir.glob('*.md')):
         text = md_file.read_text(encoding='utf-8')
-        all_macros.extend(parse_file(text, md_file.stem, md_file.parent))
+        all_macros.extend(parse_file(text, md_file.stem, content_dir.parent))
     return all_macros
 
 
-if __name__ == '__main__':
-    path = Path(sys.argv[1]) if len(sys.argv) > 1 else Path('.')
-    if path.is_file():
-        result = parse_file(path.read_text(encoding='utf-8'), path.stem, path.parent)
+def sync(content_dir: Path, app_dir: Path) -> None:
+    """Parse content and copy assets into the Angular app directory (mirrors CI)."""
+    import shutil
+
+    result = parse_dir(content_dir)
+
+    steps_json = app_dir / 'public' / 'content' / 'steps.json'
+    steps_json.parent.mkdir(parents=True, exist_ok=True)
+    steps_json.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
+    print(f'wrote {steps_json}')
+
+    src_info = content_dir.parent / 'info'
+    dst_info = app_dir / 'public' / 'info'
+    if src_info.exists():
+        if dst_info.exists():
+            shutil.rmtree(dst_info)
+        shutil.copytree(src_info, dst_info)
+        count = sum(1 for _ in dst_info.iterdir())
+        print(f'copied {count} files to {dst_info}')
     else:
-        result = parse_dir(path)
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+        print(f'warning: info/ not found at {src_info}', file=sys.stderr)
+
+
+if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Parse markdown content into steps.json')
+    parser.add_argument('content', nargs='?', default='.', help='markdown file or content/ directory')
+    parser.add_argument('--sync', metavar='APP_DIR',
+                        help='write steps.json and copy info/ assets into APP_DIR (mirrors CI)')
+    args = parser.parse_args()
+
+    path = Path(args.content)
+
+    if args.sync:
+        if not path.is_dir():
+            print('error: --sync requires a content directory, not a file', file=sys.stderr)
+            sys.exit(1)
+        sync(path, Path(args.sync))
+    else:
+        if path.is_file():
+            result = parse_file(path.read_text(encoding='utf-8'), path.stem, path.parent.parent)
+        else:
+            result = parse_dir(path)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
