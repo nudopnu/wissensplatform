@@ -31,10 +31,10 @@
 ## Postprocessing
 
 - [ ] Mit geöffnetem ROM-Trial **Reconstruct** ausführen [i](info/reconstruct.png)
-- [ ] Die **AutoInitialize** Labeling-Pipeline ausführen [i](info/auto-initialize.png)
+- [ ] Die **AutoInitialize** Labeling-Pipeline ausführen [i](info/auto-initialize.md)
 - [ ] Start- und Endemarker (blaue Dreiecke) setzen, sodass sie die ersten Sekunden in der Anfangspose umfassen
-- [ ] **Process Static Subject Calibration** ausführen [i](info/static-subject-calibration.png)
-- [ ] **Process Static Plug-in Gait Model** ausführen [i](info/static-plugin-gait.png)
+- [ ] **Process Static Subject Calibration** ausführen [i](info/static-subject-calibration.md)
+- [ ] **Process Static Plug-in Gait Model** ausführen [i](info/static-plugin-gait.md)
 - [ ] VSK-Datei speichern
 - [ ] Die Kalibrierungsmarker `THI` und `TIB` können nun entfernt werden
 
@@ -50,7 +50,7 @@
 ## Postprocessing
 
 - [ ] Die Pipeline `01_Dynamic` öffnen
-- [ ] Die Operation **Combined Processing** ausführen [i](info/combined-processing.png)
+- [ ] Die Operation **Combined Processing** ausführen [i](info/combined-processing.md)
 - [ ] Trajektorien prüfen und Lücken füllen – fehlende Marker-Frames mit **Fill Gaps** schließen, anschließend **Filter Trajectories (Woltring)** anwenden
 - [ ] Die Operation **Kinematic Fit** erneut ausführen – aktualisiert das Skeleton-Modell nach dem Gap Filling
-- [ ] Die Operation **Process Dynamic Plug-In Gait Model** ausführen [i](info/dynamic-plugin-gait.png)
+- [ ] Die Operation **Process Dynamic Plug-In Gait Model** ausführen [i](info/dynamic-plugin-gait.md)
