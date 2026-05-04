@@ -1,0 +1,1 @@
+Das `PlugInGait FullBody_vKAD` ergänzt das normale `PlugInGait Fullbody Ai` um zwei weitere Marker die nur zur statischen Kalibrierung notwendig sind. Das erlaubt die Ermittlung der Beinlänge durch entsprechende Pipeline-Operationen.
