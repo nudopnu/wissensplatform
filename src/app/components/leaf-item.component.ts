@@ -11,7 +11,7 @@ import { LeafStep } from '../models/instruction';
             <span class="text-sm flex-1 leading-snug">{{ leaf().title }}</span>
             @if (leaf().info) {
                 <button
-                    class="btn btn-ghost btn-xs btn-circle font-serif italic opacity-0 group-hover:opacity-50 hover:!opacity-100 shrink-0"
+                    class="btn btn-xs btn-circle font-serif italic group-hover:opacity-50 hover:opacity-100! shrink-0"
                     (click)="$event.preventDefault(); openInfo.emit(leaf().info!)">
                     i
                 </button>

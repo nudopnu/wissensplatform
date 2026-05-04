@@ -1,0 +1,193 @@
+[
+    {
+        "id": "step-1",
+        "title": "Vicon Kalibrierung",
+        "mids": [
+            {
+                "id": "mid-1-1",
+                "title": "Kameras kalibrieren",
+                "leaves": [
+                    {
+                        "id": "l-1-1-1",
+                        "title": "Auf den System Preparation Tab wechseln",
+                        "info": "![](info/system-preparation-tab.gif)"
+                    },
+                    {
+                        "id": "l-1-1-2",
+                        "title": "Unter Mask Cameras auf Start klicken, ein paar Sekunden warten und dann auf Stopp klicken"
+                    },
+                    {
+                        "id": "l-1-1-3",
+                        "title": "Unter Calibrate Cameras auf Start klicken und mit dem Kalibrierstab Kalibrierungsframes aufzeichnen"
+                    }
+                ]
+            },
+            {
+                "id": "mid-1-2",
+                "title": "Nullpunkt setzen",
+                "leaves": [
+                    {
+                        "id": "l-1-2-1",
+                        "title": "Die Zentrierhilfe zwischen die Laufbänder stecken",
+                        "info": "![](info/grail-origin-01.gif)"
+                    },
+                    {
+                        "id": "l-1-2-2",
+                        "title": "Den Kalibrierstab auf das Laufbandzentrum legen",
+                        "info": "![](info/grail-origin-02.gif)"
+                    },
+                    {
+                        "id": "l-1-2-3",
+                        "title": "Unter Set Volume Origin auf Start klicken, 2–3 Sekunden warten und dann auf Stopp klicken"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "step-2",
+        "title": "Subject Kalibrierung",
+        "mids": [
+            {
+                "id": "mid-2-1",
+                "title": "Vorbereitung",
+                "leaves": [
+                    {
+                        "id": "l-2-1-1",
+                        "title": "Einen neuen Trial anlegen"
+                    },
+                    {
+                        "id": "l-2-1-2",
+                        "title": "Ein neues Skeleton (VSK) mit dem PlugIn Gait FullBody_vKAD Template (VST) erstellen",
+                        "info": "![](info/vkad.png)"
+                    },
+                    {
+                        "id": "l-2-1-3",
+                        "title": "Die Modellparameter Height (Höhe in Millimeter) und Mass (Gewicht in kg) eingeben"
+                    }
+                ]
+            },
+            {
+                "id": "mid-2-2",
+                "title": "ROM-Trial aufzeichnen",
+                "leaves": [
+                    {
+                        "id": "l-2-2-1",
+                        "title": "Den Patienten nach dem PlugIn Gait Markerset und den zwei zusätzlichen Kalibrierungsmarkern mit Markern versehen"
+                    },
+                    {
+                        "id": "l-2-2-2",
+                        "title": "Den Patienten in Motorradfahrerposition in der Mitte des Grails mit Blickrichtung Leinwand stellen",
+                        "info": "![](info/motorbike.png)"
+                    },
+                    {
+                        "id": "l-2-2-3",
+                        "title": "Eine Aufzeichnung starten"
+                    },
+                    {
+                        "id": "l-2-2-4",
+                        "title": "Nach ca. 3 Sekunden in der initialen Position soll der Patient die für die Aufzeichnung notwendige Range of Motion (ROM) vollführen"
+                    },
+                    {
+                        "id": "l-2-2-5",
+                        "title": "Aufzeichnung beenden und öffnen"
+                    }
+                ]
+            },
+            {
+                "id": "mid-2-3",
+                "title": "Postprocessing",
+                "leaves": [
+                    {
+                        "id": "l-2-3-1",
+                        "title": "Mit geöffnetem ROM-Trial Reconstruct ausführen",
+                        "info": "![](info/reconstruct.png)"
+                    },
+                    {
+                        "id": "l-2-3-2",
+                        "title": "Die AutoInitialize Labeling-Pipeline ausführen",
+                        "info": "![](info/auto-initialize.png)"
+                    },
+                    {
+                        "id": "l-2-3-3",
+                        "title": "Start- und Endemarker (blaue Dreiecke) setzen, sodass sie die ersten Sekunden in der Anfangspose umfassen"
+                    },
+                    {
+                        "id": "l-2-3-4",
+                        "title": "Process Static Subject Calibration ausführen",
+                        "info": "![](info/static-subject-calibration.png)"
+                    },
+                    {
+                        "id": "l-2-3-5",
+                        "title": "Process Static Plug-in Gait Model ausführen",
+                        "info": "![](info/static-plugin-gait.png)"
+                    },
+                    {
+                        "id": "l-2-3-6",
+                        "title": "VSK-Datei speichern"
+                    },
+                    {
+                        "id": "l-2-3-7",
+                        "title": "Die Kalibrierungsmarker THI und TIB können nun entfernt werden"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "step-3",
+        "title": "Bewegungsanalyse",
+        "mids": [
+            {
+                "id": "mid-3-1",
+                "title": "Bewegungsaufzeichnung",
+                "leaves": [
+                    {
+                        "id": "l-3-1-1",
+                        "title": "In den Live-Modus wechseln"
+                    },
+                    {
+                        "id": "l-3-1-2",
+                        "title": "Aufzeichnung starten"
+                    },
+                    {
+                        "id": "l-3-1-3",
+                        "title": "Den Patienten die gewünschten Bewegungen machen lassen"
+                    },
+                    {
+                        "id": "l-3-1-4",
+                        "title": "Aufzeichnung beenden und öffnen"
+                    }
+                ]
+            },
+            {
+                "id": "mid-3-2",
+                "title": "Postprocessing",
+                "leaves": [
+                    {
+                        "id": "l-3-2-1",
+                        "title": "Die Pipeline 01_Dynamic öffnen"
+                    },
+                    {
+                        "id": "l-3-2-2",
+                        "title": "Die Operation Combined Processing ausführen",
+                        "info": "![](info/combined-processing.png)"
+                    },
+                    {
+                        "id": "l-3-2-3",
+                        "title": "Trajektorien prüfen und Lücken füllen – fehlende Marker-Frames mit Fill Gaps schließen, anschließend Filter Trajectories (Woltring) anwenden"
+                    },
+                    {
+                        "id": "l-3-2-4",
+                        "title": "Die Operation Kinematic Fit erneut ausführen – aktualisiert das Skeleton-Modell nach dem Gap Filling"
+                    },
+                    {
+                        "id": "l-3-2-5",
+                        "title": "Die Operation Process Dynamic Plug-In Gait Model ausführen",
+                        "info": "![](info/dynamic-plugin-gait.png)"
+                    }
+                ]
+            }
+        ]
+    }
+]

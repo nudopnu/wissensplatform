@@ -44,9 +44,16 @@ import { LeafItemComponent } from './leaf-item.component';
         </div>
 
         <dialog #infoDialog class="modal">
-            <div class="modal-box max-w-lg">
+            <div class="modal-box max-w-3xl">
                 <div class="prose prose-sm max-w-none">
-                    <markdown [data]="selectedInfo()" />
+                    @if (infoLoading()) {
+                        <div class="flex justify-center items-center py-12">
+                        <span class="loading loading-spinner loading-lg"></span>
+                        </div>
+                    }
+                    @if (selectedInfo()) {
+                        <markdown [data]="selectedInfo()!" (ready)="infoLoading.set(false)" />
+                    }
                 </div>
                 <div class="modal-action mt-4">
                     <form method="dialog">
@@ -66,6 +73,7 @@ export class MacroStepComponent implements AfterViewInit {
     active = input<boolean>(false);
     checkedIds = input<ReadonlySet<string>>(new Set());
     leafToggled = output<string>();
+    infoLoading = signal(false);
 
     @ViewChild('infoDialog') private dialogRef!: ElementRef<HTMLDialogElement>;
 
@@ -78,6 +86,8 @@ export class MacroStepComponent implements AfterViewInit {
     }
 
     openInfo(info: string): void {
+        this.selectedInfo.set(undefined); // Markdown unmounten
+        this.infoLoading.set(true);
         this.selectedInfo.set(info);
         this.dialogRef.nativeElement.showModal();
     }

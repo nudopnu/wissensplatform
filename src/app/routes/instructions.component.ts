@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { AfterViewInit, Component, computed, signal } from '@angular/core';
 import { MacroStepComponent } from '../components/macro-step.component';
 import { MacroStep } from '../models/instruction';
 
@@ -20,8 +20,8 @@ const MOCK_STEPS: MacroStep[] = [
                 id: 'mid-1-2',
                 title: 'Nullpunkt setzen',
                 leaves: [
-                    { id: 'l-1-2-1', title: 'Die Zentrierhilfe zwischen die Laufbänder stecken', info: '![](info/grail-origin-01.gif)' },
-                    { id: 'l-1-2-2', title: 'Den Kalibrierstab auf das Laufbandzentrum legen', info: '![](info/grail-origin-02.gif)' },
+                    { id: 'l-1-2-1', title: 'Die Zentrierhilfe zwischen die Laufbänder stecken', info: '![](info/grail-origin-01.mp4)' },
+                    { id: 'l-1-2-2', title: 'Den Kalibrierstab auf das Laufbandzentrum legen', info: '![](info/grail-origin-02.mp4)' },
                     { id: 'l-1-2-3', title: 'Unter Set Volume Origin auf Start klicken, 2–3 Sekunden warten und dann auf Stopp klicken' },
                 ],
             },
@@ -99,11 +99,11 @@ const MOCK_STEPS: MacroStep[] = [
     host: { class: 'grow container mx-auto flex flex-col overflow-hidden' },
     imports: [MacroStepComponent],
     template: `
-        <header class="shrink-0 border-b border-base-300 px-6 py-3 flex items-center gap-4">
+        <header class="p-3 flex items-center gap-4">
             <h1 class="font-mono font-semibold text-sm tracking-wide uppercase whitespace-nowrap">
                 Plugin Gait · Protokoll
             </h1>
-            <progress class="progress progress-primary flex-1 max-w-xs" [value]="progress()" max="100"></progress>
+            <progress class="progress progress-primary flex-1" [value]="progress()" max="100"></progress>
             <span class="text-xs font-mono opacity-50 shrink-0">{{ checkedIds().size }} / {{ totalLeaves }}</span>
             <button class="btn btn-sm btn-ghost shrink-0" (click)="reset()" [disabled]="checkedIds().size === 0">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
@@ -117,6 +117,7 @@ const MOCK_STEPS: MacroStep[] = [
                 Weiter
             </button>
         </header>
+
         <div class="join join-vertical flex-1 overflow-y-auto">
             @for (step of steps; track step.id; let i = $index) {
                 <app-macro-step
@@ -130,7 +131,11 @@ const MOCK_STEPS: MacroStep[] = [
         </div>
     `,
 })
-export class InstructionsComponent {
+export class InstructionsComponent implements AfterViewInit {
+    ngAfterViewInit(): void {
+        console.log(JSON.stringify(MOCK_STEPS));
+    }
+
     readonly steps = MOCK_STEPS;
     readonly totalLeaves = MOCK_STEPS.flatMap(s => s.mids).flatMap(m => m.leaves).length;
 
