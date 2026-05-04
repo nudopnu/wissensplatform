@@ -12,7 +12,7 @@ export type Section = {
 @Component({
     host: { class: 'grow flex relative' },
     template: `
-<human [cameraPosition]="cameraPos()" />
+<human [cameraPosition]="cameraPos()" [highlightedMarker]="selectedMarker()" />
 
 <!-- toggle tab -->
 <button
@@ -32,9 +32,15 @@ export type Section = {
     [class.translate-x-full]="!drawerOpen()"
 >
     <h2 class="text-xl font-bold capitalize tracking-wide">{{ currentSection().title }}</h2>
-    <section class="flex flex-col gap-2 overflow-y-auto flex-1 pr-1">
+    <section class="flex flex-col gap-2 p-1 overflow-y-auto flex-1 pr-1">
         @for (marker of sectionMarkers(); track $index) {
-            <article class="bg-base-100/70 rounded-xl px-4 py-3 flex flex-col gap-0.5">
+            <article
+                class="rounded-xl px-4 py-3 flex flex-col gap-0.5 cursor-pointer transition-colors"
+                [class]="selectedMarker() === marker.abbreviation
+                    ? 'bg-primary/20 ring-2 ring-primary'
+                    : 'bg-base-100/70 hover:bg-base-100'"
+                (click)="selectedMarker.set(selectedMarker() === marker.abbreviation ? null : marker.abbreviation)"
+            >
                 <h3 class="text-sm font-bold text-primary">{{ marker.abbreviation }}</h3>
                 <small class="text-xs font-medium text-base-content/70">{{ marker.name }}</small>
                 <p class="text-xs text-base-content/50 leading-snug">{{ marker.description }}</p>
@@ -72,6 +78,7 @@ export class MarkersetComponent {
         { title: "Füße hinten", name: "foot back", cameraPosition: { azimuth: 2.46, polar: 1.69, radius: 1.52, offset: { x: 0.02, y: 0.33, z: 0.13 } } },
     ];
     drawerOpen = signal(true);
+    selectedMarker = signal<string | null>(null);
     cameraPos = signal<CameraPosition>({ azimuth: 0, polar: Math.PI / 2, radius: 4 });
     currentSection = signal<Section>(this.sections[0]);
     previousSection = computed(() => this.sections[(this.sections.indexOf(this.currentSection()) + this.sections.length - 1) % this.sections.length]);
@@ -81,14 +88,14 @@ export class MarkersetComponent {
 
     onclick() {
         this.currentSection.set(this.nextSection());
-        const cameraPosition = this.currentSection().cameraPosition;
-        this.cameraPos.set(cameraPosition);
+        this.cameraPos.set(this.currentSection().cameraPosition);
+        this.selectedMarker.set(null);
     }
 
     onClickBack() {
         this.currentSection.set(this.previousSection());
-        const cameraPosition = this.currentSection().cameraPosition;
-        this.cameraPos.set(cameraPosition);
+        this.cameraPos.set(this.currentSection().cameraPosition);
+        this.selectedMarker.set(null);
     }
 
 }
