@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -44,9 +45,10 @@ import { MacroStep } from '../models/instruction';
 })
 export class InstructionsComponent {
 
+    #baseURI = inject(DOCUMENT).baseURI;
     route = inject(ActivatedRoute);
     id = toSignal(this.route.paramMap.pipe(map(p => p.get('id'))));
-    steps = httpResource<MacroStep[]>(() => `/content/steps.json`);
+    steps = httpResource<MacroStep[]>(() => `${this.#baseURI}content/steps.json`);
     totalLeaves = computed(() => this.steps.hasValue() ? this.steps.value()?.flatMap(s => s.mids).flatMap(m => m.leaves).length : 1);
 
     checkedIds = signal<ReadonlySet<string>>(new Set());
