@@ -1,59 +1,82 @@
 # Wissensplatform
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.8.
+Interaktive Schritt-für-Schritt-Protokoll-App für klinische Bewegungsanalyse (Vicon PlugIn Gait). Inhalte werden aus Markdown-Dateien generiert und als Angular-App auf GitHub Pages bereitgestellt.
 
-## Development server
+## Branch-Struktur
 
-To start a local development server, run:
+| Branch | Inhalt |
+|--------|--------|
+| `main` | Markdown-Inhalte, Medien-Assets und Parser-Skript |
+| `dev` | Angular-App (Quellcode, Build-Config) |
 
-```bash
-ng serve
+Bei jedem Push auf `main` läuft automatisch eine GitHub Actions Pipeline:
+
+1. Markdown-Dateien in `content/` werden mit `parser.py` in `public/content/steps.json` konvertiert
+2. Medien-Dateien aus `info/` werden in `public/info/` kopiert
+3. Die Angular-App (Branch `dev`) wird gebaut und auf GitHub Pages veröffentlicht
+
+## Inhalte bearbeiten
+
+Protokollschritte werden in `content/*.md` gepflegt:
+
+```markdown
+# Makro-Schritt Titel
+
+## Abschnitt (optional)
+
+- [ ] Beschreibung der Aufgabe
+- [ ] Aufgabe mit Infobild [i](info/bild.png)
+- [ ] Aufgabe mit Info-Video [i](info/video.mp4)
+- [ ] Aufgabe mit eigenem Infotitel [i](info/datei.md)
+  > Titel des Info-Panels
+- [ ] Aufgabe mit reinem Inline-Text
+  > Dieser Text erscheint direkt als **Markdown** im Info-Panel
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Medien-Dateien (Bilder, Videos, GIFs) gehören in den Ordner `info/`.
 
-## Code scaffolding
+Markdown-Formatierung (fett, kursiv, `Code`, Links) ist in Schritt-Beschreibungen erlaubt.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Konvertierung lokal testen
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Voraussetzung: Python 3.x
 
 ```bash
-ng generate --help
+# Einzelne Datei parsen (Ausgabe auf stdout)
+python parser.py content/plugin-gait.md
+
+# Ganzes content/-Verzeichnis parsen
+python parser.py content/
+
+# Direkt in die App schreiben (dev-Branch muss ausgecheckt sein)
+python parser.py content/ > ../app/public/content/steps.json
 ```
 
-## Building
+Die Ausgabe ist das `steps.json`, das die Angular-App per HTTP lädt. Struktur:
 
-To build the project run:
-
-```bash
-ng build
+```json
+[
+  {
+    "id": "a1b2c3d4",
+    "title": "Makro-Schritt",
+    "mids": [
+      {
+        "id": "e5f6a7b8",
+        "title": "Abschnitt",
+        "leaves": [
+          {
+            "id": "c9d0e1f2",
+            "description": "Aufgaben-Beschreibung (Markdown)",
+            "info": {
+              "title": "Optionaler Titel",
+              "content": "Markdown-Inhalt des Info-Panels"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+IDs sind deterministisch (MD5-Hash aus Inhaltspfad), damit abgehakte Schritte nach einem Re-Parse erhalten bleiben.
