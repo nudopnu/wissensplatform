@@ -37,7 +37,7 @@ def _info_content(ref: str, base_dir: Path) -> str:
     """For media files, produce a markdown image embed. For .md files, read content."""
     suffix = Path(ref).suffix.lower()
     if suffix in _MEDIA_EXTS:
-        return f'![]({ref})'
+        return f'![](content/{ref})'
     full = base_dir / ref
     if full.exists():
         return full.read_text(encoding='utf-8').strip()
@@ -153,7 +153,7 @@ def sync(content_dir: Path, app_dir: Path) -> None:
     print(f'wrote {steps_json}')
 
     src_info = content_dir.parent / 'info'
-    dst_info = app_dir / 'public' / 'info'
+    dst_info = app_dir / 'public' / 'content' / 'info'
     if src_info.exists():
         if dst_info.exists():
             shutil.rmtree(dst_info)
