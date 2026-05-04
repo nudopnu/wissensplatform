@@ -42,3 +42,11 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Angular app files (live on dev branch, not main)
+/src/
+/public/
+/angular.json
+/package.json
+/package-lock.json
+/tsconfig*.json
