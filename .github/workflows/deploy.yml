@@ -3,6 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -11,26 +12,57 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout main (content + parser)
+        uses: actions/checkout@v4
+        with:
+          path: content
 
-      - uses: actions/setup-node@v4
+      - name: Checkout dev (Angular app)
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+          path: app
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Parse markdown → steps.json
+        run: python content/parser.py content/content > app/public/content/steps.json
+
+      - name: Copy info assets
+        run: |
+          rm -rf app/public/info
+          cp -r content/info app/public/info
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: app/package-lock.json
 
-      - run: npm ci
+      - name: Install dependencies
+        working-directory: app
+        run: npm ci
 
-      - run: npm run build -- --base-href=/${{ github.event.repository.name }}/
+      - name: Build
+        working-directory: app
+        run: npx ng build --base-href /${{ github.event.repository.name }}/
+
+      - name: Fix SPA routing
+        run: cp app/dist/wissensplatform/browser/index.html app/dist/wissensplatform/browser/404.html
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist/wissensplatform/browser
+          path: app/dist/wissensplatform/browser
 
   deploy:
     needs: build
