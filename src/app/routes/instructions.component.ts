@@ -3,7 +3,6 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs';
-import { ApiService } from '../../api.service';
 import { MacroStepComponent } from '../components/macro-step.component';
 import { MacroStep } from '../models/instruction';
 
@@ -45,7 +44,6 @@ import { MacroStep } from '../models/instruction';
 })
 export class InstructionsComponent {
 
-    api = inject(ApiService);
     route = inject(ActivatedRoute);
     id = toSignal(this.route.paramMap.pipe(map(p => p.get('id'))));
     steps = httpResource<MacroStep[]>(() => `/content/steps.json`);

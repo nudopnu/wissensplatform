@@ -59,24 +59,17 @@ export type Section = {
     imports: [HumanComponent],
 })
 export class MarkersetComponent {
-    positions: CameraPosition[] = [
-        { azimuth: -0.53, polar: 1.4184237546188165, radius: 1.5, offset: { x: -0.06172977228344065, y: 1.2305198961279227, z: 0.009944486146567942 } },
-        { azimuth: 2.56, polar: 1.3476475749365826, radius: 1.5, offset: { x: -0.061697924856772245, y: 1.2309285481188117, z: 0.0098904137820465 } },
-        { azimuth: 0.96, polar: 1.5319834614427459, radius: 1.5248239523478733, offset: { x: 0.03387284885010411, y: 0.4788132833680505, z: 0.20152981494396907 } },
-        { azimuth: -0.75, polar: 1.6121261311771762, radius: 1.524823952347877, offset: { x: -0.013947742312915158, y: 0.48105300149520264, z: 0.15656430353892947 } },
-        { azimuth: 2.46, polar: 1.6920037574318438, radius: 1.5248239523478417, offset: { x: 0.02312513350824537, y: 0.33099424542736955, z: 0.12710848658732632 } },
-    ];
     sections: Section[] = [
         { title: "Kopf", name: "head", cameraPosition: { azimuth: 1.4, polar: 1.4, radius: 0.8, offset: { x: -0.03, y: 1.60, z: -0.08 } } },
-        { title: "Brust", name: "chest", cameraPosition: { azimuth: -0.53, polar: 1.42, radius: 1.5, offset: { x: 0, y: 1.25, z: 0 } } },
-        { title: "Rücken", name: "back", cameraPosition: { azimuth: 2.56, polar: 1.35, radius: 1.5, offset: { x: 0, y: 1.25, z: 0 } } },
+        { title: "Brust", name: "chest", cameraPosition: { azimuth: -0.53, polar: 1.42, radius: 1.5, offset: { x: 0.07, y: 1.22, z: 0.04 } } },
+        { title: "Rücken", name: "back", cameraPosition: { azimuth: -3.10, polar: 1.4, radius: 1.50, offset: { x: -0.12, y: 1.24, z: 0.01 } } },
         { title: "Rechter Arm", name: "arm right", cameraPosition: { azimuth: -1.43, polar: 1.19, radius: 1.66, offset: { x: 0.1, y: 0.91, z: 0.01 } } },
         { title: "Linker Arm", name: "arm left", cameraPosition: { azimuth: 1.76, polar: 0.80, radius: 1.83, offset: { x: 0.1, y: 0.91, z: 0.01 } } },
         { title: "Hüfte hinten", name: "hip back", cameraPosition: { azimuth: -2.72, polar: 1.38, radius: 1.51, offset: { x: -0.0, y: 1.2, z: 0.02 } } },
-        { title: "Hüfte vorne", name: "hip front", cameraPosition: this.positions[0] },
+        { title: "Hüfte vorne", name: "hip front", cameraPosition: { azimuth: -0.40, polar: 1.2, radius: 1.5, offset: { x: 0.08, y: 1.22, z: 0.1 } } },
         { title: "Rechtes Bein", name: "leg right", cameraPosition: { azimuth: -0.67, polar: 1.6, radius: 1.59, offset: { x: -0.0, y: 0.43, z: -0.03 } } },
-        { title: "Linkes Bein", name: "leg left", cameraPosition: this.positions[2] },
-        { title: "Füße hinten", name: "foot back", cameraPosition: this.positions[4] },
+        { title: "Linkes Bein", name: "leg left", cameraPosition: { azimuth: 0.93, polar: 1.53, radius: 1.53, offset: { x: 0.21, y: 0.45, z: -0.03 } } },
+        { title: "Füße hinten", name: "foot back", cameraPosition: { azimuth: 2.46, polar: 1.69, radius: 1.52, offset: { x: 0.02, y: 0.33, z: 0.13 } } },
     ];
     drawerOpen = signal(true);
     cameraPos = signal<CameraPosition>({ azimuth: 0, polar: Math.PI / 2, radius: 4 });
