@@ -137,7 +137,7 @@ def parse_dir(content_dir: Path) -> list[dict]:
     all_macros: list[dict] = []
     for md_file in sorted(content_dir.glob('*.md')):
         text = md_file.read_text(encoding='utf-8')
-        all_macros.extend(parse_file(text, md_file.stem, content_dir.parent))
+        all_macros.extend(parse_file(text, md_file.stem, content_dir))
     return all_macros
 
 
@@ -152,7 +152,7 @@ def sync(content_dir: Path, app_dir: Path) -> None:
     steps_json.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
     print(f'wrote {steps_json}')
 
-    src_info = content_dir.parent / 'info'
+    src_info = content_dir / 'info'
     dst_info = app_dir / 'public' / 'content' / 'info'
     if src_info.exists():
         if dst_info.exists():
