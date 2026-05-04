@@ -52,6 +52,7 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
     isRotating = false;
     darkMode = inject(ThemeService).darkMode;
     cameraPosition = input<CameraPosition>();
+    highlightedMarker = input<string | null>(null);
 
     private scene!: THREE.Scene;
     private camera!: THREE.PerspectiveCamera;
@@ -68,6 +69,10 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
     private skinMeshes: THREE.Mesh[] = [];
     private boneMeshes: THREE.Mesh[] = [];
     private boxersMeshes: THREE.Mesh[] = [];
+    private markerBalls = new Map<string, { mesh: THREE.Mesh; original: THREE.Material | THREE.Material[] }>();
+    private readonly highlightMat = new THREE.MeshStandardMaterial({
+        color: 0xffaa00, emissive: 0xff6600, emissiveIntensity: 2.0, roughness: 0.3,
+    });
     private skinFresnelMat!: THREE.ShaderMaterial;
     private boneFresnelMat!: THREE.ShaderMaterial;
     private litSkinMat!: THREE.MeshStandardMaterial;
@@ -88,7 +93,17 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
             this.lastTime = performance.now();
             this.isLerping = true;
             this.targetPosition = pos;
-        })
+        });
+        effect(() => {
+            const abbrev = this.highlightedMarker();
+            this.markerBalls.forEach(({ mesh, original }) => {
+                mesh.material = original as THREE.Material;
+            });
+            if (abbrev) {
+                const entry = this.markerBalls.get(abbrev);
+                if (entry) entry.mesh.material = this.highlightMat;
+            }
+        });
     }
 
     btnClass(mode: ViewMode): string {
@@ -112,6 +127,7 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
         cancelAnimationFrame(this.animFrameId);
         this.controls?.dispose();
         this.renderer?.dispose();
+        this.highlightMat.dispose();
     }
 
     @HostListener('window:resize')
@@ -301,7 +317,7 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
 
                 model.traverse((child) => {
                     if (!(child instanceof THREE.Mesh)) return;
-                    
+
                     child.geometry.computeVertexNormals();
                     if (child.name === 'boxers') {
                         this.boxersMeshes.push(child);
@@ -337,12 +353,14 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
         loader.load('markersonly.glb', (gltf) => {
             const model = gltf.scene;
             this.scene.add(model);
-            const names: string[] = [];
             model.traverse((child) => {
-                if (child instanceof THREE.Mesh) return;
-                names.push(child.name);
+                console.log(child);
+
+                if (child instanceof THREE.Mesh && child.name.includes('Ball') && child.parent) {
+
+                    this.markerBalls.set(child.parent.name, { mesh: child, original: child.material });
+                }
             });
-            console.log(names);
         });
     }
 
