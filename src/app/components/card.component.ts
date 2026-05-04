@@ -7,7 +7,7 @@ import { Router, RouterLink } from "@angular/router";
     template: `
 <div class="card card-side bg-base-100 shadow-sm cursor-pointer" (click)="onclick(card())">
     <figure class="flex-none basis-1/2">
-        <img [src]="'./' + card().img" alt="Movie" loading="lazy" />
+        <img [src]="'./' + card().img" alt="Movie" />
     </figure>
 
     <div class="card-body">

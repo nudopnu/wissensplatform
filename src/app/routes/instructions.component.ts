@@ -1,99 +1,11 @@
-import { AfterViewInit, Component, computed, signal } from '@angular/core';
+import { httpResource } from '@angular/common/http';
+import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
+import { map } from 'rxjs';
+import { ApiService } from '../../api.service';
 import { MacroStepComponent } from '../components/macro-step.component';
 import { MacroStep } from '../models/instruction';
-
-const MOCK_STEPS: MacroStep[] = [
-    {
-        id: 'step-1',
-        title: 'Vicon Kalibrierung',
-        mids: [
-            {
-                id: 'mid-1-1',
-                title: 'Kameras kalibrieren',
-                leaves: [
-                    { id: 'l-1-1-1', description: 'Auf den System Preparation Tab wechseln', info: { content: '![](info/system-preparation-tab.gif)' } },
-                    { id: 'l-1-1-2', description: 'Unter Mask Cameras auf **Start** klicken, ein paar Sekunden warten und dann auf **Stopp** klicken' },
-                    { id: 'l-1-1-3', description: 'Unter Calibrate Cameras auf **Start** klicken und mit dem Kalibrierstab Kalibrierungsframes aufzeichnen' },
-                ],
-            },
-            {
-                id: 'mid-1-2',
-                title: 'Nullpunkt setzen',
-                leaves: [
-                    { id: 'l-1-2-1', description: 'Die Zentrierhilfe zwischen die Laufbänder stecken', info: { content: '![](info/grail-origin-01.mp4)' } },
-                    { id: 'l-1-2-2', description: 'Den Kalibrierstab auf das Laufbandzentrum legen', info: { content: '![](info/grail-origin-02.mp4)' } },
-                    { id: 'l-1-2-3', description: 'Unter Set Volume Origin auf **Start** klicken, 2–3 Sekunden warten und dann auf **Stopp** klicken' },
-                ],
-            },
-        ],
-    },
-    {
-        id: 'step-2',
-        title: 'Subject Kalibrierung',
-        mids: [
-            {
-                id: 'mid-2-1',
-                title: 'Vorbereitung',
-                leaves: [
-                    { id: 'l-2-1-1', description: 'Einen neuen Trial anlegen' },
-                    { id: 'l-2-1-2', description: 'Ein neues Skeleton (VSK) mit dem PlugIn Gait `FullBody_vKAD` Template (VST) erstellen', info: { content: '![](info/vkad.png)' } },
-                    { id: 'l-2-1-3', description: 'Die Modellparameter **Height** (Höhe in Millimeter) und **Mass** (Gewicht in kg) eingeben' },
-                ],
-            },
-            {
-                id: 'mid-2-2',
-                title: 'ROM-Trial aufzeichnen',
-                leaves: [
-                    { id: 'l-2-2-1', description: 'Den Patienten nach dem PlugIn Gait Markerset und den zwei zusätzlichen Kalibrierungsmarkern mit Markern versehen' },
-                    { id: 'l-2-2-2', description: 'Den Patienten in Motorradfahrerposition in der Mitte des Grails mit Blickrichtung Leinwand stellen', info: { content: '![](info/motorbike.png)' } },
-                    { id: 'l-2-2-3', description: 'Eine Aufzeichnung starten' },
-                    { id: 'l-2-2-4', description: 'Nach ca. 3 Sekunden in der initialen Position soll der Patient die für die Aufzeichnung notwendige Range of Motion (ROM) vollführen' },
-                    { id: 'l-2-2-5', description: 'Aufzeichnung beenden und öffnen' },
-                ],
-            },
-            {
-                id: 'mid-2-3',
-                title: 'Postprocessing',
-                leaves: [
-                    { id: 'l-2-3-1', description: 'Mit geöffnetem ROM-Trial **Reconstruct** ausführen', info: { content: '![](info/reconstruct.png)' } },
-                    { id: 'l-2-3-2', description: 'Die **AutoInitialize** Labeling-Pipeline ausführen', info: { content: '![](info/auto-initialize.png)' } },
-                    { id: 'l-2-3-3', description: 'Start- und Endemarker (blaue Dreiecke) setzen, sodass sie die ersten Sekunden in der Anfangspose umfassen' },
-                    { id: 'l-2-3-4', description: '**Process Static Subject Calibration** ausführen', info: { content: '![](info/static-subject-calibration.png)' } },
-                    { id: 'l-2-3-5', description: '**Process Static Plug-in Gait Model** ausführen', info: { content: '![](info/static-plugin-gait.png)' } },
-                    { id: 'l-2-3-6', description: 'VSK-Datei speichern' },
-                    { id: 'l-2-3-7', description: 'Die Kalibrierungsmarker `THI` und `TIB` können nun entfernt werden' },
-                ],
-            },
-        ],
-    },
-    {
-        id: 'step-3',
-        title: 'Bewegungsanalyse',
-        mids: [
-            {
-                id: 'mid-3-1',
-                title: 'Bewegungsaufzeichnung',
-                leaves: [
-                    { id: 'l-3-1-1', description: 'In den Live-Modus wechseln' },
-                    { id: 'l-3-1-2', description: 'Aufzeichnung starten' },
-                    { id: 'l-3-1-3', description: 'Den Patienten die gewünschten Bewegungen machen lassen' },
-                    { id: 'l-3-1-4', description: 'Aufzeichnung beenden und öffnen' },
-                ],
-            },
-            {
-                id: 'mid-3-2',
-                title: 'Postprocessing',
-                leaves: [
-                    { id: 'l-3-2-1', description: 'Die Pipeline `01_Dynamic` öffnen' },
-                    { id: 'l-3-2-2', description: 'Die Operation **Combined Processing** ausführen', info: { content: '![](info/combined-processing.png)' } },
-                    { id: 'l-3-2-3', description: 'Trajektorien prüfen und Lücken füllen – fehlende Marker-Frames mit **Fill Gaps** schließen, anschließend **Filter Trajectories (Woltring)** anwenden' },
-                    { id: 'l-3-2-4', description: 'Die Operation **Kinematic Fit** erneut ausführen – aktualisiert das Skeleton-Modell nach dem Gap Filling' },
-                    { id: 'l-3-2-5', description: 'Die Operation **Process Dynamic Plug-In Gait Model** ausführen', info: { content: '![](info/dynamic-plugin-gait.png)' } },
-                ],
-            },
-        ],
-    },
-];
 
 @Component({
     host: { class: 'grow container mx-auto flex flex-col overflow-hidden' },
@@ -104,13 +16,13 @@ const MOCK_STEPS: MacroStep[] = [
                 Plugin Gait · Protokoll
             </h1>
             <progress class="progress progress-primary flex-1" [value]="progress()" max="100"></progress>
-            <span class="text-xs font-mono opacity-50 shrink-0">{{ checkedIds().size }} / {{ totalLeaves }}</span>
+            <span class="text-xs font-mono opacity-50 shrink-0">{{ checkedIds().size }} / {{ totalLeaves() }}</span>
             <button class="btn btn-sm btn-ghost shrink-0" (click)="reset()" [disabled]="checkedIds().size === 0">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                 </svg>
             </button>
-            <button class="btn btn-sm btn-primary shrink-0" (click)="checkNext()" [disabled]="checkedIds().size >= totalLeaves">
+            <button class="btn btn-sm btn-primary shrink-0" (click)="checkNext()" [disabled]="checkedIds().size >= totalLeaves()">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                 </svg>
@@ -119,7 +31,7 @@ const MOCK_STEPS: MacroStep[] = [
         </header>
 
         <div class="join join-vertical flex-1 overflow-y-auto">
-            @for (step of steps; track step.id; let i = $index) {
+            @for (step of steps.value(); track step.id; let i = $index) {
                 <app-macro-step
                     [step]="step"
                     [num]="i + 1"
@@ -131,17 +43,17 @@ const MOCK_STEPS: MacroStep[] = [
         </div>
     `,
 })
-export class InstructionsComponent implements AfterViewInit {
-    ngAfterViewInit(): void {
-        console.log(JSON.stringify(MOCK_STEPS));
-    }
+export class InstructionsComponent {
 
-    readonly steps = MOCK_STEPS;
-    readonly totalLeaves = MOCK_STEPS.flatMap(s => s.mids).flatMap(m => m.leaves).length;
+    api = inject(ApiService);
+    route = inject(ActivatedRoute);
+    id = toSignal(this.route.paramMap.pipe(map(p => p.get('id'))));
+    steps = httpResource<MacroStep[]>(() => `/content/steps.json`);
+    totalLeaves = computed(() => this.steps.hasValue() ? this.steps.value()?.flatMap(s => s.mids).flatMap(m => m.leaves).length : 1);
 
     checkedIds = signal<ReadonlySet<string>>(new Set());
     activeStepIndex = signal(0);
-    progress = computed(() => this.totalLeaves ? (this.checkedIds().size / this.totalLeaves) * 100 : 0);
+    progress = computed(() => this.totalLeaves ? (this.checkedIds().size / this.totalLeaves()) * 100 : 0);
 
     toggle(id: string): void {
         this.checkedIds.update(s => {
@@ -150,8 +62,9 @@ export class InstructionsComponent implements AfterViewInit {
             return next;
         });
         const idx = this.activeStepIndex();
-        if (idx < this.steps.length - 1) {
-            const stepLeafIds = this.steps[idx].mids.flatMap(m => m.leaves).map(l => l.id);
+        if (!this.steps.hasValue()) return;
+        if (idx < this.steps.value().length - 1) {
+            const stepLeafIds = this.steps.value()[idx].mids.flatMap(m => m.leaves).map(l => l.id);
             if (stepLeafIds.every(id => this.checkedIds().has(id))) {
                 this.activeStepIndex.set(idx + 1);
             }
@@ -164,7 +77,8 @@ export class InstructionsComponent implements AfterViewInit {
     }
 
     checkNext(): void {
-        const allIds = MOCK_STEPS.flatMap(s => s.mids).flatMap(m => m.leaves).map(l => l.id);
+        if (!this.steps.hasValue()) return;
+        const allIds = this.steps.value().flatMap(s => s.mids).flatMap(m => m.leaves).map(l => l.id);
         const nextId = allIds.find(id => !this.checkedIds().has(id));
         if (nextId) this.toggle(nextId);
     }

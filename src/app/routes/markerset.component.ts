@@ -67,14 +67,14 @@ export class MarkersetComponent {
         { azimuth: 2.46, polar: 1.6920037574318438, radius: 1.5248239523478417, offset: { x: 0.02312513350824537, y: 0.33099424542736955, z: 0.12710848658732632 } },
     ];
     sections: Section[] = [
-        { title: "Kopf", name: "head", cameraPosition: { azimuth: 1.4, polar: 1.4, radius: 0.8, offset: { x: -0.027386657117932235, y: 1.6024308027941734, z: -0.08018106127244119 } } },
-        { title: "Brust", name: "chest", cameraPosition: { azimuth: -0.53, polar: 1.4184237546188165, radius: 1.5, offset: { x: 0, y: 1.25, z: 0 } } },
-        { title: "Rücken", name: "back", cameraPosition: { azimuth: 2.56, polar: 1.3476475749365826, radius: 1.5, offset: { x: 0, y: 1.25, z: 0 } } },
-        { title: "Rechter Arm", name: "arm right", cameraPosition: { azimuth: 1.760193049901144, polar: 0.8083896042338266, radius: 1.826855211700685, offset: { x: 0.10393556628959008, y: 0.9138209871554698, z: 0.008240661971648822 } } },
-        { title: "Linker Arm", name: "arm left", cameraPosition: { azimuth: -1.4271163962527094, polar: 1.1934803823958935, radius: 1.6553972277481126, offset: { x: 0.10393556628959008, y: 0.9138209871554698, z: 0.008240661971648822 } } },
-        { title: "Hüfte hinten", name: "hip back", cameraPosition: { azimuth: -2.7193942704626637, polar: 1.3789694209973087, radius: 1.5076839007361214, offset: { x: -0.07839693626873526, y: 1.2394212958331268, z: 0.022619462501132597 } } },
+        { title: "Kopf", name: "head", cameraPosition: { azimuth: 1.4, polar: 1.4, radius: 0.8, offset: { x: -0.03, y: 1.60, z: -0.08 } } },
+        { title: "Brust", name: "chest", cameraPosition: { azimuth: -0.53, polar: 1.42, radius: 1.5, offset: { x: 0, y: 1.25, z: 0 } } },
+        { title: "Rücken", name: "back", cameraPosition: { azimuth: 2.56, polar: 1.35, radius: 1.5, offset: { x: 0, y: 1.25, z: 0 } } },
+        { title: "Rechter Arm", name: "arm right", cameraPosition: { azimuth: -1.43, polar: 1.19, radius: 1.66, offset: { x: 0.1, y: 0.91, z: 0.01 } } },
+        { title: "Linker Arm", name: "arm left", cameraPosition: { azimuth: 1.76, polar: 0.80, radius: 1.83, offset: { x: 0.1, y: 0.91, z: 0.01 } } },
+        { title: "Hüfte hinten", name: "hip back", cameraPosition: { azimuth: -2.72, polar: 1.38, radius: 1.51, offset: { x: -0.0, y: 1.2, z: 0.02 } } },
         { title: "Hüfte vorne", name: "hip front", cameraPosition: this.positions[0] },
-        { title: "Rechtes Bein", name: "leg right", cameraPosition: { azimuth: -0.6729550034916044, polar: 1.6591092138640886, radius: 1.5921335310892282, offset: { x: -0.03593006785198116, y: 0.4334644325268781, z: -0.03107727413698646 } } },
+        { title: "Rechtes Bein", name: "leg right", cameraPosition: { azimuth: -0.67, polar: 1.6, radius: 1.59, offset: { x: -0.0, y: 0.43, z: -0.03 } } },
         { title: "Linkes Bein", name: "leg left", cameraPosition: this.positions[2] },
         { title: "Füße hinten", name: "foot back", cameraPosition: this.positions[4] },
     ];
