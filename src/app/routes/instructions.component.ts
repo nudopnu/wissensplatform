@@ -11,7 +11,7 @@ import { MacroStep } from '../models/instruction';
     host: { class: 'grow container mx-auto flex flex-col overflow-hidden' },
     imports: [MacroStepComponent],
     template: `
-        <header class="p-3 flex items-center gap-4">
+        <header class="p-3 flex flex-wrap justify-end items-center gap-4">
             <h1 class="font-mono font-semibold text-sm tracking-wide uppercase whitespace-nowrap">
                 Plugin Gait · Protokoll
             </h1>
