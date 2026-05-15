@@ -1,1 +1,1 @@
-Rekonstruiert, labelt und führt einen Kinematic Fit in einem Schritt durch:
+Rekonstruiert, und labelt in einem Schritt
