@@ -30,8 +30,10 @@
 
 ## Postprocessing
 
+- [ ] Die Pipeline `01_Static` öffnen
 - [ ] Mit geöffnetem ROM-Trial **Reconstruct** ausführen [i](info/reconstruct.md)
-- [ ] Die **AutoInitialize** Labeling-Pipeline ausführen [i](info/auto-initialize.md)
+- [ ] Die Operation **Autolabel Static** ausführen
+- [ ] Die Operation **Scale Subject VSK** ausführen
 - [ ] Start- und Endemarker (blaue Dreiecke) setzen, sodass sie die ersten Sekunden in der Anfangspose umfassen
 - [ ] Die Operation **Static Skeleton Calibration - Markers Only** ausführen [i](info/static-skeleton-calibration.md)
 
@@ -57,6 +59,8 @@
 
 - [ ] Die Pipeline `01_Dynamic` öffnen
 - [ ] Die Operation **Combined Processing** ausführen [i](info/combined-processing.md)
-- [ ] Trajektorien im Quality-Tab prüfen und Lücken füllen – fehlende Marker-Frames mit **Fill Gaps** schließen, anschließend **Filter Trajectories (Woltring)** anwenden
-- [ ] Die Operation **Kinematic Fit** erneut ausführen – aktualisiert das Skeleton-Modell nach dem Gap Filling
+- [ ] Optional: Die Operation **Kinematic Fit** erneut ausführen
+- [ ] Trajektorien im Quality-Tab prüfen und Lücken füllen – fehlende Marker-Frames mit **Fill Gaps** schließen
+- [ ] Bei 0 Gaps im Quality-Tab die Operation **Filter Trajectories (Woltring)**  anwenden
 - [ ] Die Operation **Process Dynamic Plug-In Gait Model** ausführen [i](info/dynamic-plugin-gait.md)
+- [ ] Den Trial und die VSK-Datei speichern
