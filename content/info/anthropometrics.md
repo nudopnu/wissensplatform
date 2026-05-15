@@ -1,0 +1,2 @@
+Für die Berechnung des Plug-in Gait Modells sind zusätzlich manuelle anthropometrische Messungen erforderlich. Dazu gehören unter anderem Körpergröße, Körpergewicht, Beinlänge, Kniebreite sowie Knöchelbreite. Diese Werte werden benötigt, um virtuelle Gelenkzentren innerhalb des Körpers zu berechnen, da sich die Marker lediglich auf der Hautoberfläche befinden.
+Mit dem vKAD-Modell lassen sich Beinlänge, SIAS/ASIS–Trochanter-Abstand, Kniebreite, sowie Knöchelbreite anhand der gelabelten Marker ableiten und müssen somit nicht gemessen werden.
