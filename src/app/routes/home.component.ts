@@ -32,5 +32,12 @@ export class HomeComponent {
                 { label: "Ganzkörpermodell (Plug-in Gait + vKAD)", link: "/markerset" },
             ],
         },
+        {
+            title: "Grail Simulator",
+            description: "Eine Anwendungen um die Ansteuerung des GRAILs zu simulieren",
+            img: "grail-simulator.jpg",
+            link: "/grail-simulator",
+            sublinks: [],
+        },
     ]
 }

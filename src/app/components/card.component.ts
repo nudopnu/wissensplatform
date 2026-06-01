@@ -5,9 +5,9 @@ import { Router, RouterLink } from "@angular/router";
 @Component({
     selector: 'card',
     template: `
-<div class="card card-side bg-base-100 shadow-sm cursor-pointer" (click)="onclick(card())">
+<div class="card card-side p-2 bg-base-100 shadow-sm cursor-pointer" (click)="onclick(card())">
     <figure class="flex-none basis-1/2">
-        <img [src]="'./' + card().img" alt="Movie" />
+        <img [src]="'./' + card().img" width="800" height="500" [alt]="card().img" />
     </figure>
 
     <div class="card-body">
@@ -29,10 +29,7 @@ import { Router, RouterLink } from "@angular/router";
 })
 export class CardComponent {
     card = input.required<Card>();
-    tes = inject(Router);
+    router = inject(Router);
 
-    onclick(card: Card) {
-        console.log(card);
-        this.tes.navigate([card.link]);
-    }
+    onclick = (card: Card) => this.router.navigate([card.link]);
 }
