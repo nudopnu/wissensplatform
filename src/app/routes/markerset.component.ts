@@ -10,7 +10,7 @@ export type Section = {
 }
 
 @Component({
-    host: { class: 'grow flex relative' },
+    host: { class: 'h-full flex relative' },
     template: `
 <human [cameraPosition]="cameraPos()" [highlightedMarker]="selectedMarker()" />
 

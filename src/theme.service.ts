@@ -3,11 +3,11 @@ import { effect, Injectable, signal } from "@angular/core";
 @Injectable({providedIn: "root"})
 export class ThemeService {
 
-    darkMode = signal(false);
+    isDarkMode = signal(false);
 
     constructor() {
         effect(() => {
-            const isDark = this.darkMode();
+            const isDark = this.isDarkMode();
 
             document.documentElement.setAttribute(
                 'data-theme',
@@ -17,10 +17,10 @@ export class ThemeService {
     }
 
     toggle() {
-        this.darkMode.update(v => !v);
+        this.isDarkMode.update(v => !v);
     }
 
     setDarkMode(value: boolean) {
-        this.darkMode.set(value);
+        this.isDarkMode.set(value);
     }
 }

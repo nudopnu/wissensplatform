@@ -8,9 +8,15 @@ import { isMesh } from "./three.utils";
 @Component({
     selector: "grail",
     imports: [SceneComponent],
-    host: { class: 'grow' },
+    host: { class: 'grow relative' },
     template: `
-    <scene [config]="config" (AfterSceneInit)="AfterSceneInit($event)"></scene>
+    <scene [config]="config" (afterSceneInit)="afterSceneInit($event)"></scene>
+    <aside class="absolute left-0 top-0">
+        <fieldset class="fieldset">
+            <legend class="fieldset-legend">Pitch</legend>
+            <input type="range" min="0" max="100" value="40" class="range range-primary" />
+        </fieldset>
+    </aside>
 `,
 })
 export class GrailComponent {
@@ -19,7 +25,7 @@ export class GrailComponent {
         cameraPosition: [0, 3, 10],
     }
 
-    public AfterSceneInit(SceneComponent: SceneComponent) {
+    public afterSceneInit(SceneComponent: SceneComponent) {
         const { scene } = SceneComponent;
         const textureLoader = new TextureLoader();
         const leftTex = textureLoader.load("/textures/belt.png");

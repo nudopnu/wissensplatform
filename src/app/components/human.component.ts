@@ -22,7 +22,7 @@ type ViewMode = 'fresnel' | 'lit';
 
 @Component({
     selector: 'human',
-    host: { class: 'block relative grow min-h-0 overflow-hidden' },
+    host: { class: 'block grow min-h-0 overflow-hidden' },
     template: `
     <div #viewer class="w-full h-full"></div>
 
@@ -50,7 +50,7 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
 
     viewMode: ViewMode = 'lit';
     isRotating = false;
-    darkMode = inject(ThemeService).darkMode;
+    darkMode = inject(ThemeService).isDarkMode;
     cameraPosition = input<CameraPosition>();
     highlightedMarker = input<string | null>(null);
 

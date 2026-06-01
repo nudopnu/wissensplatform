@@ -1,16 +1,33 @@
-import { AfterViewInit, Component, computed, ElementRef, HostListener, input, output, viewChild } from "@angular/core";
+import { AfterViewInit, Component, computed, effect, ElementRef, HostListener, inject, input, output, viewChild } from "@angular/core";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 
 import * as THREE from 'three';
+import { ThemeService } from "../../../theme.service";
 
 export type SceneConfig = {
     cameraPosition: number[];
-    backgroundColor: THREE.ColorRepresentation;
+    themes: {
+        dark: ThemeConfig;
+        light: ThemeConfig;
+    }
 };
+
+export type ThemeConfig = {
+    backgroundColor: THREE.ColorRepresentation;
+}
+
+export type ViewMode = 'dark' | 'light';
 
 const DEFAULT_CONFIG: SceneConfig = {
     cameraPosition: [0, 1.5, 2.8],
-    backgroundColor: 0xffffff,
+    themes: {
+        light: {
+            backgroundColor: 0xffffff,
+        },
+        dark: {
+            backgroundColor: 0x1d232a,
+        }
+    }
 };
 
 @Component({
@@ -22,9 +39,11 @@ const DEFAULT_CONFIG: SceneConfig = {
 })
 export class SceneComponent implements AfterViewInit {
 
+    isDarkMode = inject(ThemeService).isDarkMode;
+    theme = computed(() => this.isDarkMode() ? this.config().themes.dark : this.config().themes.light)
     viewer = viewChild.required<ElementRef<HTMLDivElement>>("viewer");
     config = input<SceneConfig, Partial<SceneConfig>>(DEFAULT_CONFIG, { transform: (cfg: Partial<SceneConfig>) => ({ ...DEFAULT_CONFIG, ...cfg }) })
-    AfterSceneInit = output<SceneComponent>();
+    afterSceneInit = output<SceneComponent>();
 
     public scene!: THREE.Scene;
     public camera!: THREE.PerspectiveCamera;
@@ -32,9 +51,16 @@ export class SceneComponent implements AfterViewInit {
     public controls!: OrbitControls;
     public grid!: THREE.GridHelper;
 
+    constructor() {
+        effect(() => {
+            this.applyTheme(this.theme());
+        });
+    }
+
     ngAfterViewInit(): void {
         this.initScene();
-        this.AfterSceneInit.emit(this);
+        this.applyTheme(this.theme());
+        this.afterSceneInit.emit(this);
         requestAnimationFrame(() => this.animate());
     }
 
@@ -51,7 +77,6 @@ export class SceneComponent implements AfterViewInit {
         el.appendChild(this.renderer.domElement);
 
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color(cfg.backgroundColor);
         this.camera = new THREE.PerspectiveCamera(42, w / h, 0.01, 100);
 
         const [x, y, z] = cfg.cameraPosition;
@@ -75,6 +100,12 @@ export class SceneComponent implements AfterViewInit {
         const rimLight = new THREE.DirectionalLight(0xeef4ff, 0.5);
         rimLight.position.set(0, 2, -3);
         this.scene.add(new THREE.AmbientLight(0xffffff, 1.0), keyLight, fillLight, rimLight);
+    }
+
+    private applyTheme(theme: ThemeConfig) {
+        if (!this.scene) return; // not yet initialized
+
+        this.scene.background = new THREE.Color(theme.backgroundColor);
     }
 
     @HostListener('window:resize')

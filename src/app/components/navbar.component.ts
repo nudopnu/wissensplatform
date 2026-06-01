@@ -43,7 +43,7 @@ import { ThemeService } from "../../theme.service";
   imports: [RouterLink],
 })
 export class NavbarComponent {
-  darkMode = inject(ThemeService).darkMode;
+  darkMode = inject(ThemeService).isDarkMode;
   title = input<string>();
   router = inject(Router);
 }
