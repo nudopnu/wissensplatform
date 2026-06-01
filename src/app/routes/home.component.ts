@@ -33,7 +33,7 @@ export class HomeComponent {
             ],
         },
         {
-            title: "Grail Simulator",
+            title: "GRAIL Controls Simulator",
             description: "Eine Anwendungen um die Ansteuerung des GRAILs zu simulieren",
             img: "grail-simulator.jpg",
             link: "/grail-simulator",

@@ -6,6 +6,8 @@ import { ThemeService } from "../../../theme.service";
 
 export type SceneConfig = {
     cameraPosition: number[];
+    minDistance: number;
+    maxDistance: number;
     themes: {
         dark: ThemeConfig;
         light: ThemeConfig;
@@ -20,6 +22,8 @@ export type ViewMode = 'dark' | 'light';
 
 const DEFAULT_CONFIG: SceneConfig = {
     cameraPosition: [0, 1.5, 2.8],
+    minDistance: 0.4,
+    maxDistance: 10,
     themes: {
         light: {
             backgroundColor: 0xffffff,
@@ -44,6 +48,7 @@ export class SceneComponent implements AfterViewInit {
     viewer = viewChild.required<ElementRef<HTMLDivElement>>("viewer");
     config = input<SceneConfig, Partial<SceneConfig>>(DEFAULT_CONFIG, { transform: (cfg: Partial<SceneConfig>) => ({ ...DEFAULT_CONFIG, ...cfg }) })
     afterSceneInit = output<SceneComponent>();
+    onAnimate = output<number>();
 
     public scene!: THREE.Scene;
     public camera!: THREE.PerspectiveCamera;
@@ -61,7 +66,7 @@ export class SceneComponent implements AfterViewInit {
         this.initScene();
         this.applyTheme(this.theme());
         this.afterSceneInit.emit(this);
-        requestAnimationFrame(() => this.animate());
+        requestAnimationFrame((timestamp) => this.animate(timestamp));
     }
 
     private initScene(): void {
@@ -86,8 +91,8 @@ export class SceneComponent implements AfterViewInit {
         this.controls.target.set(0, 0.9, 0);
         this.controls.enableDamping = true;
         this.controls.dampingFactor = 0.06;
-        this.controls.minDistance = 0.4;
-        this.controls.maxDistance = 10;
+        this.controls.minDistance = cfg.minDistance;
+        this.controls.maxDistance = cfg.maxDistance;
         this.controls.update();
 
         this.grid = new THREE.GridHelper(6, 24, 0xbbbbbb, 0xe0e0e0);
@@ -121,8 +126,9 @@ export class SceneComponent implements AfterViewInit {
         this.renderer.domElement.style.height = `${h}px`;
     }
 
-    private animate(): void {
-        requestAnimationFrame(() => this.animate());
+    private animate(timestamp: number): void {
+        requestAnimationFrame((timestamp) => this.animate(timestamp));
+        this.onAnimate.emit(timestamp);
         this.controls.update();
         this.renderer.render(this.scene, this.camera);
     }
