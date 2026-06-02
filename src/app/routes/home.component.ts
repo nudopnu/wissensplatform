@@ -4,6 +4,7 @@ import { CardComponent } from "../components/card.component";
 
 @Component({
     imports: [CardComponent],
+    host: {class: "overflow-y-scroll h-full block relative"},
     template: `
 <main class="container mx-auto p-4 flex flex-col gap-4">
     @for (card of cards; track $index) {

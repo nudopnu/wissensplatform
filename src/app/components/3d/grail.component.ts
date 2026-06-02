@@ -1,33 +1,36 @@
-import { Component, computed, effect, signal } from "@angular/core";
-import { Clock, Object3D, RepeatWrapping, Texture, TextureEventMap, TextureLoader, Timer } from "three";
+import { Component, computed, signal } from "@angular/core";
+import { Object3D, RepeatWrapping, Texture, TextureEventMap, TextureLoader, Timer } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
-import { SceneComponent, SceneConfig } from "./scene.component";
-import { isMesh } from "./three.utils";
-import { SliderComponent } from "../daisy/slider.component";
-import { TextFieldComponent } from "../daisy/textfield.component";
 import { parseCommands, Sequence } from "../../models/sequence";
 import { TreadmillState } from "../../models/treadmill-state";
+import { SliderComponent } from "../daisy/slider.component";
+import { TextFieldComponent } from "../daisy/textfield.component";
+import { SceneComponent, SceneConfig } from "./scene.component";
+import { isMesh } from "./three.utils";
+import { DrawerComponent } from "../daisy/drawer.component";
 
 
 @Component({
     selector: "grail",
-    imports: [SceneComponent, SliderComponent, TextFieldComponent],
+    imports: [SceneComponent, SliderComponent, TextFieldComponent, DrawerComponent],
     host: { class: 'grow relative h-full flex flex-col' },
     template: `
     <scene [config]="config" (afterSceneInit)="afterSceneInit($event)" (onAnimate)="onAnimate($event)"></scene>
-    <aside class="absolute left-0 top-0 w-20 bottom-0 flex flex-col gap-4 pointer-events-none">
+    <aside class="absolute left-0 top-0 w-72 p-5 bottom-0 flex flex-col gap-4 pointer-events-none">
         <code>Pitch: {{ pitch() }}</code>
         <code>Sway: {{ sway() }}</code>
         <code>LBS: {{ lbs() }}</code>
         <code>RBS: {{ rbs() }}</code>
     </aside>
-    <aside class="absolute right-0 top-0 bottom-0 w-72 p-5 flex flex-col gap-4 backdrop-blur-sm shadow-xl overflow-y-scroll">
+    <drawer>
+        <div class="divider">Basiszustand</div>
+
         <slider label="Pitch" [min]="-10" [max]="10" [(value)]="basePitch"></slider>
         <slider label="Sway" [min]="-0.05" [max]="0.05" [step]="0.01" [(value)]="baseSway"></slider>
         <slider label="Speed" [min]="-3" [max]="7" [step]="0.1" [(value)]="baseSpeed"></slider>
         <button class="btn" (click)="onResetControls()">Zurücksetzen</button>
 
-        <div class="divider">Sequenz</div>
+        <div class="divider">Neue Sequenz</div>
         
         <textfield label="Name" [(value)]="sequenceName" placeholder="Beispiel: Testsequenz"></textfield>
         <textfield label="Bedingung" [(value)]="sequenceConditionText" placeholder="Beispiel: fp1.z < -40"></textfield>
@@ -38,7 +41,7 @@ import { TreadmillState } from "../../models/treadmill-state";
 
         <button class="btn btn-primary" (click)="onTestSequence()">Sequenz testen</button>
         <button class="btn btn-accent">Sequenz speichern</button>
-    </aside>
+    </drawer>
 `,
 })
 export class GrailComponent {

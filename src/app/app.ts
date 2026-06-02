@@ -4,11 +4,11 @@ import { NavbarComponent } from './components/navbar.component';
 
 @Component({
   selector: 'app-root',
-  host: { class: 'bg-base-200 flex flex-col h-dvh' },
+  host: { class: 'bg-base-200 flex flex-col h-dvh overflow-hidden' },
   imports: [RouterOutlet, NavbarComponent],
   template: `
 <navbar title="IZIT Wissensplattform" />
-<section class="overflow-y-scroll flex-1 relative">
+<section class="contents">
   <router-outlet></router-outlet>
 </section>
   `,
