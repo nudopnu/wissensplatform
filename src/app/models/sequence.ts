@@ -101,7 +101,8 @@ export type Keyframe = {
 
 export function parseKeyframes(commands: Command[]): Keyframe[] {
     let startTime = 0;
-    let currentKeyframe: Keyframe = { startTime, endTime: startTime, commands: [] };
+    let endTime = startTime;
+    let currentKeyframe: Keyframe = { startTime, endTime, commands: [] };
     const keyframes: Keyframe[] = [currentKeyframe];
 
     commands.forEach(cmd => {
@@ -117,5 +118,6 @@ export function parseKeyframes(commands: Command[]): Keyframe[] {
         }
     });
     currentKeyframe.endTime = startTime;
+    if (currentKeyframe.commands.length === 0) keyframes.pop();
     return keyframes
 }

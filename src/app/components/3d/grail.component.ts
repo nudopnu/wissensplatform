@@ -41,6 +41,10 @@ import { DrawerComponent } from "../daisy/drawer.component";
 
         <button class="btn btn-primary" (click)="onTestSequence()">Sequenz testen</button>
         <button class="btn btn-accent">Sequenz speichern</button>
+
+        <div class="divider">Verbindung zu D-FLow</div>
+
+
     </drawer>
 `,
 })
@@ -109,7 +113,9 @@ export class GrailComponent {
     onResetControls() {
         this.baseSway.set(0);
         this.basePitch.set(0);
-        this.baseSpeed.set(0);
+        this.baseSpeed.set(1);
+        this.leftOffset = 0;
+        this.rightOffset = 0;
     }
 
     onTestSequence() {
@@ -117,6 +123,12 @@ export class GrailComponent {
             const commands = parseCommands(this.sequenceText());
             const sequence = new Sequence(this.sequenceName(), this.sequenceConditionText(), commands);
             this.sequenceError.set(undefined);
+            this.currentState.set({
+                rbs: this.baseSpeed(),
+                lbs: this.baseSpeed(),
+                pitch: this.basePitch(),
+                sway: this.baseSway(),
+            });
             this.currentSequence.set(sequence);
             sequence.start();
         } catch (e: any) {
