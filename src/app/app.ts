@@ -8,7 +8,7 @@ import { NavbarComponent } from './components/navbar.component';
   imports: [RouterOutlet, NavbarComponent],
   template: `
 <navbar title="IZIT Wissensplattform" />
-<section class="overflow-y-scroll grow relative">
+<section class="overflow-y-scroll flex-1 relative">
   <router-outlet></router-outlet>
 </section>
   `,
