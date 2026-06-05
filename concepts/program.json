@@ -1,0 +1,16 @@
+{
+    "id": "trip_left",
+    "params": {
+        "intensity": "number",
+        "default": 1
+    },
+    "track": [
+        {
+            "op": "lerp",
+            "dur": 80,
+            "to": {
+                "lbs": "intensity"
+            }
+        }
+    ]
+}
