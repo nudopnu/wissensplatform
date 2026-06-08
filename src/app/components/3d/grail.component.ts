@@ -1,13 +1,14 @@
 import { Component, computed, signal } from "@angular/core";
 import { Object3D, RepeatWrapping, Texture, TextureEventMap, TextureLoader, Timer } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
+import { SceneConfig } from "../../models/scene-config.model";
 import { parseCommands, Sequence } from "../../models/sequence";
 import { TreadmillState } from "../../models/treadmill-state";
+import { DrawerComponent } from "../daisy/drawer.component";
 import { SliderComponent } from "../daisy/slider.component";
 import { TextFieldComponent } from "../daisy/textfield.component";
-import { SceneComponent, SceneConfig } from "./scene.component";
+import { SceneComponent } from "./scene.component";
 import { isMesh } from "./three.utils";
-import { DrawerComponent } from "../daisy/drawer.component";
 
 
 @Component({
@@ -15,7 +16,7 @@ import { DrawerComponent } from "../daisy/drawer.component";
     imports: [SceneComponent, SliderComponent, TextFieldComponent, DrawerComponent],
     host: { class: 'grow relative h-full flex flex-col' },
     template: `
-    <scene [config]="config" (afterSceneInit)="afterSceneInit($event)" (onAnimate)="onAnimate($event)"></scene>
+    <scene (afterSceneInit)="afterSceneInit($event)" (onAnimate)="onAnimate($event)"></scene>
     <aside class="absolute left-0 top-0 w-72 p-5 bottom-0 flex flex-col gap-4 pointer-events-none">
         <code>Pitch: {{ pitch() }}</code>
         <code>Sway: {{ sway() }}</code>

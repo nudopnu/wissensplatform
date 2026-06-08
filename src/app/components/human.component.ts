@@ -15,7 +15,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { ThemeService } from '../../theme.service';
+import { ThemeService } from '../services/theme.service';
 import { CameraPosition } from '../models/cameraposition';
 
 type ViewMode = 'fresnel' | 'lit';

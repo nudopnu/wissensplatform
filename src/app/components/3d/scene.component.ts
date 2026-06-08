@@ -1,38 +1,10 @@
-import { AfterViewInit, Component, computed, effect, ElementRef, HostListener, inject, input, output, viewChild } from "@angular/core";
+import { AfterViewInit, Component, computed, effect, ElementRef, HostListener, inject, output, viewChild } from "@angular/core";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 
 import * as THREE from 'three';
-import { ThemeService } from "../../../theme.service";
-
-export type SceneConfig = {
-    cameraPosition: number[];
-    minDistance: number;
-    maxDistance: number;
-    themes: {
-        dark: ThemeConfig;
-        light: ThemeConfig;
-    }
-};
-
-export type ThemeConfig = {
-    backgroundColor: THREE.ColorRepresentation;
-}
-
-export type ViewMode = 'dark' | 'light';
-
-const DEFAULT_CONFIG: SceneConfig = {
-    cameraPosition: [0, 1.5, 2.8],
-    minDistance: 0.4,
-    maxDistance: 10,
-    themes: {
-        light: {
-            backgroundColor: 0xffffff,
-        },
-        dark: {
-            backgroundColor: 0x1d232a,
-        }
-    }
-};
+import { ThemeConfig } from "../../models/scene-config.model";
+import { ThemeService } from "../../services/theme.service";
+import { UserConfigService } from "../../services/user-config.service";
 
 @Component({
     selector: "scene",
@@ -44,9 +16,10 @@ const DEFAULT_CONFIG: SceneConfig = {
 export class SceneComponent implements AfterViewInit {
 
     isDarkMode = inject(ThemeService).isDarkMode;
-    theme = computed(() => this.isDarkMode() ? this.config().themes.dark : this.config().themes.light)
+    config = inject(UserConfigService).config;
+    resoultionFactor = computed(() => this.config().antialiasing ? 2 : 1);
+    theme = computed(() => this.isDarkMode() ? this.config().themes.dark : this.config().themes.light);
     viewer = viewChild.required<ElementRef<HTMLDivElement>>("viewer");
-    config = input<SceneConfig, Partial<SceneConfig>>(DEFAULT_CONFIG, { transform: (cfg: Partial<SceneConfig>) => ({ ...DEFAULT_CONFIG, ...cfg }) })
     afterSceneInit = output<SceneComponent>();
     onAnimate = output<number>();
 
@@ -59,6 +32,10 @@ export class SceneComponent implements AfterViewInit {
     constructor() {
         effect(() => {
             this.applyTheme(this.theme());
+        });
+        effect(() => {
+            const _ = this.resoultionFactor();
+            this.onResize();
         });
     }
 
@@ -74,9 +51,10 @@ export class SceneComponent implements AfterViewInit {
         const el = this.viewer().nativeElement;
         const w = el.clientWidth;
         const h = el.clientHeight;
+        const resolutionFactor = this.resoultionFactor();
 
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
-        this.renderer.setSize(w * 2, h * 2);
+        this.renderer.setSize(w * resolutionFactor, h * resolutionFactor);
         this.renderer.domElement.style.width = `${w}px`;
         this.renderer.domElement.style.height = `${h}px`;
         el.appendChild(this.renderer.domElement);
@@ -115,13 +93,16 @@ export class SceneComponent implements AfterViewInit {
 
     @HostListener('window:resize')
     onResize(): void {
+        if (!this.scene) return;
+
         const el = this.viewer().nativeElement;
         const w = el.clientWidth;
         const h = el.clientHeight;
+        const resolutionFactor = this.resoultionFactor();
 
         this.camera.aspect = w / h;
         this.camera.updateProjectionMatrix();
-        this.renderer.setSize(w * 2, h * 2);
+        this.renderer.setSize(w * resolutionFactor, h * resolutionFactor);
         this.renderer.domElement.style.width = `${w}px`;
         this.renderer.domElement.style.height = `${h}px`;
     }
