@@ -82,21 +82,13 @@ export class GrailComponent {
 
     currentState = signal<TreadmillState>(this.targetState());
 
-    // acceleration
-    currentAcceleration = computed<TreadmillState>(() => ({
+    // change rate
+    currentChangeRate = computed<TreadmillState>(() => ({
         rbs: Math.sign(this.targetState().rbs - this.currentState().rbs) * this.beltAccelleration,
         lbs: Math.sign(this.targetState().lbs - this.currentState().lbs) * this.beltAccelleration,
-        pitch: Math.sign(this.targetState().pitch - this.currentState().pitch),
-        sway: Math.sign(this.targetState().sway - this.currentState().sway),
+        pitch: Math.sign(this.targetState().pitch - this.currentState().pitch) * this.pitchChangeRate,
+        sway: Math.sign(this.targetState().sway - this.currentState().sway) * this.swayChangeRate,
     }));
-
-    // speed / change rate
-    currentChangeRate: TreadmillState = ({
-        rbs: 0,
-        lbs: 0,
-        pitch: 0,
-        sway: 0,
-    });
 
     // simulation params
     beltAccelleration = 15;
@@ -133,24 +125,18 @@ export class GrailComponent {
         const delta = this.timer.getDelta();
 
         // simulation step
-        const oldChangeRate = this.currentChangeRate;
-        this.currentChangeRate = {
-            lbs: oldChangeRate.lbs + this.currentAcceleration().lbs * delta,
-            rbs: oldChangeRate.rbs + this.currentAcceleration().rbs * delta,
-            pitch: this.currentAcceleration().pitch * this.pitchChangeRate * delta,
-            sway: this.currentAcceleration().sway * this.swayChangeRate * delta,
-        };
+        const currentChangeRate = this.currentChangeRate();
         this.currentState.update(old => {
-            let lbs = old.lbs + this.currentChangeRate.lbs;
-            let rbs = old.rbs + this.currentChangeRate.rbs;
-            let pitch = old.pitch + this.currentChangeRate.pitch;
-            let sway = old.sway + this.currentChangeRate.sway;
+            let lbs = old.lbs + currentChangeRate.lbs * delta;
+            let rbs = old.rbs + currentChangeRate.rbs * delta;
+            let pitch = old.pitch + currentChangeRate.pitch * delta;
+            let sway = old.sway + currentChangeRate.sway * delta;
 
             // clamp values to prevent overshooting
-            lbs = Math.sign(this.currentChangeRate.lbs) < 0 ? Math.max(lbs, this.targetState().lbs) : Math.min(lbs, this.targetState().lbs);
-            rbs = Math.sign(this.currentChangeRate.rbs) < 0 ? Math.max(rbs, this.targetState().rbs) : Math.min(rbs, this.targetState().rbs);
-            pitch = Math.sign(this.currentChangeRate.pitch) < 0 ? Math.max(pitch, this.targetState().pitch) : Math.min(pitch, this.targetState().pitch);
-            sway = Math.sign(this.currentChangeRate.sway) < 0 ? Math.max(sway, this.targetState().sway) : Math.min(sway, this.targetState().sway);
+            lbs = Math.sign(currentChangeRate.lbs) < 0 ? Math.max(lbs, this.targetState().lbs) : Math.min(lbs, this.targetState().lbs);
+            rbs = Math.sign(currentChangeRate.rbs) < 0 ? Math.max(rbs, this.targetState().rbs) : Math.min(rbs, this.targetState().rbs);
+            pitch = Math.sign(currentChangeRate.pitch) < 0 ? Math.max(pitch, this.targetState().pitch) : Math.min(pitch, this.targetState().pitch);
+            sway = Math.sign(currentChangeRate.sway) < 0 ? Math.max(sway, this.targetState().sway) : Math.min(sway, this.targetState().sway);
             return { lbs, rbs, pitch, sway };
         });
 
