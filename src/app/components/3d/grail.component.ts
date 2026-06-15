@@ -51,10 +51,6 @@ import { isMesh } from "./three.utils";
 })
 export class GrailComponent {
 
-    config: Partial<SceneConfig> = {
-        cameraPosition: [0, 3, 10],
-    }
-
     // Base params from sliders
     basePitch = signal(0);
     baseSway = signal(0);

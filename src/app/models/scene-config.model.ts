@@ -22,7 +22,7 @@ export type ViewMode = 'dark' | 'light';
 
 
 export const DEFAULT_SCENE_CONFIG: SceneConfig = {
-    cameraPosition: [0, 1.5, 2.8],
+    cameraPosition: [0, 3, 8],
     minDistance: 0.4,
     maxDistance: 10,
     themes: {
