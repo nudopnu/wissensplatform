@@ -1,7 +1,6 @@
 import { Component, computed, signal } from "@angular/core";
 import { Object3D, RepeatWrapping, Texture, TextureEventMap, TextureLoader, Timer } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
-import { SceneConfig } from "../../models/scene-config.model";
 import { parseCommands, Sequence } from "../../models/sequence";
 import { TreadmillState } from "../../models/treadmill-state";
 import { DrawerComponent } from "../daisy/drawer.component";
@@ -17,24 +16,23 @@ import { isMesh } from "./three.utils";
     host: { class: 'grow relative h-full flex flex-col' },
     template: `
     <scene (afterSceneInit)="afterSceneInit($event)" (onAnimate)="onAnimate($event)"></scene>
-    <aside class="absolute left-0 top-0 w-72 p-5 bottom-0 flex flex-col gap-4 pointer-events-none">
-        <code>Pitch: {{ pitch() }}</code>
-        <code>Sway: {{ sway() }}</code>
-        <code>LBS: {{ lbs() }}</code>
-        <code>RBS: {{ rbs() }}</code>
+    <aside class="absolute left-0 top-0 w-72 p-5 bottom-0 flex flex-col gap-4 pointer-events-none whitespace-pre">
+        <code>Pitch: {{ pitch().toFixed(4).padStart(8) }}</code>
+        <code>Sway: {{ sway().toFixed(4).padStart(9) }}</code>
+        <code>LBS: {{ lbs().toFixed(4).padStart(10) }}</code>
+        <code>RBS: {{ rbs().toFixed(4).padStart(10) }}</code>
     </aside>
     <drawer>
         <div class="divider">Basiszustand</div>
 
-        <slider label="Pitch" [min]="-10" [max]="10" [(value)]="basePitch"></slider>
-        <slider label="Sway" [min]="-0.05" [max]="0.05" [step]="0.01" [(value)]="baseSway"></slider>
-        <slider label="Speed" [min]="-3" [max]="7" [step]="0.1" [(value)]="baseSpeed"></slider>
+        <slider label="Pitch" [min]="-10" [max]="10" [(value)]="targetBasePitch"></slider>
+        <slider label="Sway" [min]="-0.05" [max]="0.05" [step]="0.01" [(value)]="targetBaseSway"></slider>
+        <slider label="Speed" [min]="-3" [max]="7" [step]="0.1" [(value)]="targetBaseSpeed"></slider>
         <button class="btn" (click)="onResetControls()">Zurücksetzen</button>
 
         <div class="divider">Neue Sequenz</div>
         
         <textfield label="Name" [(value)]="sequenceName" placeholder="Beispiel: Testsequenz"></textfield>
-        <textfield label="Bedingung" [(value)]="sequenceConditionText" placeholder="Beispiel: fp1.z < -40"></textfield>
         <textfield label="Sequenz" [(value)]="sequenceText" [area]="true" placeholder="Beispiel:\nlbs -3\nrbs -3\nwait 50"></textfield>
         @if (sequenceError()) {
             <p class="text-error text-sm">{{ sequenceError() }}</p>
@@ -51,29 +49,66 @@ import { isMesh } from "./three.utils";
 })
 export class GrailComponent {
 
-    // Base params from sliders
-    basePitch = signal(0);
-    baseSway = signal(0);
-    baseSpeed = signal(1);
+    // Target base params from sliders
+    targetBasePitch = signal(0);
+    targetBaseSway = signal(0);
+    targetBaseSpeed = signal(1);
     sequenceName = signal("");
     sequenceConditionText = signal("");
     sequenceText = signal("");
     sequenceError = signal<string | undefined>(undefined);
-
-    // state controlled by sequence
-    currentState = signal<TreadmillState>({
-        lbs: this.baseSpeed(),
-        rbs: this.baseSpeed(),
-        pitch: this.basePitch(),
-        sway: this.baseSway(),
-    });
     currentSequence = signal<Sequence | undefined>(undefined);
 
+    // state controlled by sliders
+    targetBaseState = computed<TreadmillState>(() => ({
+        lbs: this.targetBaseSpeed(),
+        rbs: this.targetBaseSpeed(),
+        pitch: this.targetBasePitch(),
+        sway: this.targetBaseSway(),
+    }));
+
+    // state controlled by sequence
+    targetSequenceState = signal<TreadmillState>({
+        lbs: this.targetBaseSpeed(),
+        rbs: this.targetBaseSpeed(),
+        pitch: this.targetBasePitch(),
+        sway: this.targetBaseSway(),
+    });
+
+    // resulting target state (either base or sequence)
+    targetState = computed(() => this.currentSequence() ? this.targetSequenceState() : this.targetBaseState());
+
+    /* SIMULATION */
+
+    currentState = signal<TreadmillState>(this.targetState());
+
+    // acceleration
+    currentAcceleration = computed<TreadmillState>(() => ({
+        rbs: Math.sign(this.targetState().rbs - this.currentState().rbs) * this.beltAccelleration,
+        lbs: Math.sign(this.targetState().lbs - this.currentState().lbs) * this.beltAccelleration,
+        pitch: Math.sign(this.targetState().pitch - this.currentState().pitch),
+        sway: Math.sign(this.targetState().sway - this.currentState().sway),
+    }));
+
+    // speed / change rate
+    currentChangeRate: TreadmillState = ({
+        rbs: 0,
+        lbs: 0,
+        pitch: 0,
+        sway: 0,
+    });
+
+    // simulation params
+    beltAccelleration = 15;
+    beltSpeedRange = [-3, 15];
+    pitchChangeRate = 18;
+    swayChangeRate = 0.11;
+
     // Actual params
-    pitch = computed(() => this.currentSequence() ? this.currentState().pitch : this.basePitch());
-    sway = computed(() => this.currentSequence() ? this.currentState().sway : this.baseSway());
-    lbs = computed(() => this.currentSequence() ? this.currentState().lbs : this.baseSpeed());
-    rbs = computed(() => this.currentSequence() ? this.currentState().rbs : this.baseSpeed());
+    pitch = computed(() => this.currentState().pitch);
+    sway = computed(() => this.currentState().sway);
+    lbs = computed(() => this.currentState().lbs);
+    rbs = computed(() => this.currentState().rbs);
 
     timer = new Timer();
     leftOffset = 0;
@@ -89,13 +124,36 @@ export class GrailComponent {
 
         const sequence = this.currentSequence();
         if (sequence) {
-            this.currentState.update(sequence.update.bind(sequence));
+            this.targetSequenceState.update(sequence.update.bind(sequence));
             if (sequence.hasEnded) {
                 this.currentSequence.set(undefined);
             }
         }
 
         const delta = this.timer.getDelta();
+
+        // simulation step
+        const oldChangeRate = this.currentChangeRate;
+        this.currentChangeRate = {
+            lbs: oldChangeRate.lbs + this.currentAcceleration().lbs * delta,
+            rbs: oldChangeRate.rbs + this.currentAcceleration().rbs * delta,
+            pitch: this.currentAcceleration().pitch * this.pitchChangeRate * delta,
+            sway: this.currentAcceleration().sway * this.swayChangeRate * delta,
+        };
+        this.currentState.update(old => {
+            let lbs = old.lbs + this.currentChangeRate.lbs;
+            let rbs = old.rbs + this.currentChangeRate.rbs;
+            let pitch = old.pitch + this.currentChangeRate.pitch;
+            let sway = old.sway + this.currentChangeRate.sway;
+
+            // clamp values to prevent overshooting
+            lbs = Math.sign(this.currentChangeRate.lbs) < 0 ? Math.max(lbs, this.targetState().lbs) : Math.min(lbs, this.targetState().lbs);
+            rbs = Math.sign(this.currentChangeRate.rbs) < 0 ? Math.max(rbs, this.targetState().rbs) : Math.min(rbs, this.targetState().rbs);
+            pitch = Math.sign(this.currentChangeRate.pitch) < 0 ? Math.max(pitch, this.targetState().pitch) : Math.min(pitch, this.targetState().pitch);
+            sway = Math.sign(this.currentChangeRate.sway) < 0 ? Math.max(sway, this.targetState().sway) : Math.min(sway, this.targetState().sway);
+            return { lbs, rbs, pitch, sway };
+        });
+
         this.leftOffset -= delta * this.lbs() / this.BELT_LENGTH;
         this.rightOffset -= delta * this.rbs() / this.BELT_LENGTH;
         this.leftOffset %= 1;
@@ -108,9 +166,9 @@ export class GrailComponent {
     }
 
     onResetControls() {
-        this.baseSway.set(0);
-        this.basePitch.set(0);
-        this.baseSpeed.set(1);
+        this.targetBaseSway.set(0);
+        this.targetBasePitch.set(0);
+        this.targetBaseSpeed.set(1);
         this.leftOffset = 0;
         this.rightOffset = 0;
     }
@@ -120,12 +178,6 @@ export class GrailComponent {
             const commands = parseCommands(this.sequenceText());
             const sequence = new Sequence(this.sequenceName(), this.sequenceConditionText(), commands);
             this.sequenceError.set(undefined);
-            this.currentState.set({
-                rbs: this.baseSpeed(),
-                lbs: this.baseSpeed(),
-                pitch: this.basePitch(),
-                sway: this.baseSway(),
-            });
             this.currentSequence.set(sequence);
             sequence.start();
         } catch (e: any) {
