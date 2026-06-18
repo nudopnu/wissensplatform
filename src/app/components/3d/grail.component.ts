@@ -1,4 +1,4 @@
-import { Component, computed, signal } from "@angular/core";
+import { Component, computed, inject, signal } from "@angular/core";
 import { Object3D, RepeatWrapping, Texture, TextureEventMap, TextureLoader, Timer } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
 import { parseCommands, Sequence } from "../../models/sequence";
@@ -8,6 +8,7 @@ import { SliderComponent } from "../daisy/slider.component";
 import { TextFieldComponent } from "../daisy/textfield.component";
 import { SceneComponent } from "./scene.component";
 import { isMesh } from "./three.utils";
+import { RemoteService } from "../../services/remote.service";
 
 
 @Component({
@@ -39,15 +40,19 @@ import { isMesh } from "./three.utils";
         }
 
         <button class="btn btn-primary" (click)="onTestSequence()">Sequenz testen</button>
-        <button class="btn btn-accent">Sequenz speichern</button>
-
+        
         <div class="divider">Verbindung zu D-FLow</div>
-
+        
+        <button class="btn btn-accent" (click)="onStartDFLow()">DFlow starten</button>
+        <button class="btn btn-primary" (click)="onSaveSequence()">Sequenz speichern</button>
+        <button class="btn btn-primary" (click)="onTestSequenceLive()">Sequenz live testen</button>
 
     </drawer>
 `,
 })
 export class GrailComponent {
+
+    remote = inject(RemoteService);
 
     // Target base params from sliders
     targetBasePitch = signal(0);
@@ -169,6 +174,20 @@ export class GrailComponent {
         } catch (e: any) {
             this.sequenceError.set(e.message);
         }
+    }
+
+    async onSaveSequence() {
+        const result = await this.remote.saveSequence(this.sequenceName(), this.sequenceText());
+        console.log(result);
+    }
+
+    async onTestSequenceLive() {
+        const result = await this.remote.runSequence(this.sequenceName())
+        console.log(result);
+    }
+
+    async onStartDFLow() {
+        await this.remote.startDFlow();
     }
 
     public afterSceneInit(SceneComponent: SceneComponent) {
