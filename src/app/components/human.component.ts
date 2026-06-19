@@ -17,6 +17,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { ThemeService } from '../services/theme.service';
 import { CameraPosition } from '../models/cameraposition';
+import { MarkerSetName } from '../models/markersets';
 
 type ViewMode = 'fresnel' | 'lit';
 
@@ -47,6 +48,7 @@ type ViewMode = 'fresnel' | 'lit';
 export class HumanComponent implements AfterViewInit, OnDestroy {
     @ViewChild('viewer') private viewerRef!: ElementRef<HTMLDivElement>;
     @ViewChild('loading') private loadingRef!: ElementRef<HTMLDivElement>;
+    markerset = input<"pig" | "hbm2">("pig");
 
     viewMode: ViewMode = 'lit';
     isRotating = false;
@@ -69,6 +71,10 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
     private skinMeshes: THREE.Mesh[] = [];
     private boneMeshes: THREE.Mesh[] = [];
     private boxersMeshes: THREE.Mesh[] = [];
+    private markersetMeshes: { [key in MarkerSetName]?: THREE.Object3D } = {
+        hbm2: undefined,
+        pig: undefined,
+    }
     private markerBalls = new Map<string, { mesh: THREE.Mesh; original: THREE.Material | THREE.Material[] }>();
     private readonly highlightMat = new THREE.MeshStandardMaterial({
         color: 0xffaa00, emissive: 0xff6600, emissiveIntensity: 2.0, roughness: 0.3,
@@ -104,6 +110,25 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
                 if (entry) entry.mesh.material = this.highlightMat;
             }
         });
+        effect(() => {
+            const markersetName = this.markerset();
+            this.setMarkerset(markersetName);
+        });
+    }
+    
+    private setMarkerset(markersetName: string) {
+        const { pig, hbm2 } = this.markersetMeshes;
+        if (!pig || !hbm2) return;
+        switch (markersetName) {
+            case 'pig':
+                pig.visible = true;
+                hbm2.visible = false;
+                break;
+            case 'hbm2':
+                pig.visible = false;
+                hbm2.visible = true;
+                break;
+        }
     }
 
     btnClass(mode: ViewMode): string {
@@ -218,7 +243,7 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
             const offset = this.camera.position.clone().sub(this.controls.target);
             const sph = new THREE.Spherical().setFromVector3(offset);
             const { x, y, z } = this.controls.target;
-            console.log({ azimuth: sph.theta, polar: sph.phi, radius: sph.radius, offset: { x, y, z } });
+            // console.log({ azimuth: sph.theta, polar: sph.phi, radius: sph.radius, offset: { x, y, z } });
         });
 
         this.grid = new THREE.GridHelper(6, 24, 0x001a33, 0x000d1a);
@@ -354,13 +379,17 @@ export class HumanComponent implements AfterViewInit, OnDestroy {
             const model = gltf.scene;
             this.scene.add(model);
             model.traverse((child) => {
-                console.log(child);
-
+                if (child instanceof THREE.Object3D && child.name == "pig") {
+                    this.markersetMeshes.pig = child;
+                }
+                if (child instanceof THREE.Object3D && child.name == "hbm2") {
+                    this.markersetMeshes.hbm2 = child;
+                }
                 if (child instanceof THREE.Mesh && child.name.includes('Ball') && child.parent) {
-
                     this.markerBalls.set(child.parent.name, { mesh: child, original: child.material });
                 }
             });
+            this.setMarkerset(this.markerset());
         });
     }
 

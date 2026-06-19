@@ -1,7 +1,8 @@
 import { Component, computed, signal } from "@angular/core";
 import { HumanComponent } from "../components/human.component";
 import { CameraPosition } from "../models/cameraposition";
-import { pluginGaitMarkers } from "../models/plugin-gait";
+import { hbm2Markers, MarkerSetName, pluginGaitMarkers } from "../models/markersets";
+import { SelectComponent } from "../components/daisy/select.component";
 
 export type Section = {
     name: string;
@@ -12,7 +13,7 @@ export type Section = {
 @Component({
     host: { class: 'h-full flex relative' },
     template: `
-<human [cameraPosition]="cameraPos()" [highlightedMarker]="selectedMarker()" />
+<human [cameraPosition]="cameraPos()" [highlightedMarker]="selectedMarker()" [markerset]="markersetname()"/>
 
 <!-- toggle tab -->
 <button
@@ -31,6 +32,8 @@ export type Section = {
     class="absolute right-0 top-0 bottom-0 w-72 flex flex-col gap-4 bg-base-200/80 backdrop-blur-sm p-5 shadow-xl transition-transform duration-300"
     [class.translate-x-full]="!drawerOpen()"
 >
+    <daisy-select title="Markerset" [options]="options" [display]="display" [(value)]="markerset"></daisy-select>
+    <div class="divider"></div>
     <h2 class="text-xl font-bold capitalize tracking-wide">{{ currentSection().title }}</h2>
     <section class="flex flex-col gap-2 p-1 overflow-y-auto flex-1 pr-1">
         @for (marker of sectionMarkers(); track $index) {
@@ -62,9 +65,16 @@ export type Section = {
     </section>
 </aside>
     `,
-    imports: [HumanComponent],
+    imports: [HumanComponent, SelectComponent],
 })
 export class MarkersetComponent {
+    options = [
+        { title: "Human Body Model 2 (Motek)", short: "HBM2", markers: hbm2Markers },
+        { title: "Plug-In Gait (Vicon)", short: "PiG", markers: pluginGaitMarkers },
+    ];
+    markerset = signal(this.options[0]);
+    markersetname = computed(() => this.markerset().short.toLowerCase() as MarkerSetName);
+    display = (option: { title: string, short: string }) => (option.title);
     sections: Section[] = [
         { title: "Kopf", name: "head", cameraPosition: { azimuth: 1.4, polar: 1.4, radius: 0.8, offset: { x: -0.03, y: 1.60, z: -0.08 } } },
         { title: "Brust", name: "chest", cameraPosition: { azimuth: -0.53, polar: 1.42, radius: 1.5, offset: { x: 0.07, y: 1.22, z: 0.04 } } },
@@ -83,8 +93,8 @@ export class MarkersetComponent {
     currentSection = signal<Section>(this.sections[0]);
     previousSection = computed(() => this.sections[(this.sections.indexOf(this.currentSection()) + this.sections.length - 1) % this.sections.length]);
     nextSection = computed(() => this.sections[(this.sections.indexOf(this.currentSection()) + 1) % this.sections.length]);
-    sectionMarkers = computed(() => this.markers.filter(marker => marker.section == this.currentSection().name));
-    markers = pluginGaitMarkers;
+    sectionMarkers = computed(() => this.markers().filter(marker => marker.section == this.currentSection().name));
+    markers = computed(() => this.markerset().markers);
 
     onclick() {
         this.currentSection.set(this.nextSection());
