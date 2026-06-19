@@ -1,0 +1,19 @@
+services:
+
+  server:
+    build: /server
+    ports:
+      - 8000:8000
+    volumes:
+      - ./server:/server
+    command: ["uvicorn", "main:app", "--reload"]
+  
+  client:
+    image: node:20
+    ports:
+      - 4200:4200
+    working_dir: /client
+    volumes:
+      - ./client:/client
+      - /client/node_modules
+    command: sh -c "npm install && npm start -- --host 0.0.0.0 --poll 500 --proxy-config proxy.conf.json"
