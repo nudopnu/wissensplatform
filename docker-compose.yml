@@ -1,8 +1,7 @@
 services:
 
   server:
-    build:
-      context: .
-      dockerfile: server/Dockerfile.prod
+    image: registry.gitlab.rlp.net/xr-lab/izit-plattform/server:latest
+    restart: unless-stopped
     ports:
       - 8000:8000
