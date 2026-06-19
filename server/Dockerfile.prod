@@ -1,0 +1,20 @@
+# --- Stage 1: Angular App builden ---
+FROM node:22-alpine AS client-build
+WORKDIR /client
+COPY client/package.json client/package-lock.json ./
+RUN npm ci
+COPY client/ ./
+RUN npm run build
+
+# --- Stage 2: Python Server ---
+FROM python:3.12.13-alpine3.24
+WORKDIR /server
+COPY server/requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+COPY server/ .
+
+# Gebaute Angular App in den Server kopieren
+COPY --from=client-build /client/dist/wissensplatform/browser ./static
+
+EXPOSE 8000
+CMD ["python", "main.py"]
