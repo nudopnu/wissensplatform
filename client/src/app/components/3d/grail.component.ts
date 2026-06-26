@@ -168,6 +168,12 @@ export class GrailComponent {
         try {
             const commands = parseCommands(this.sequenceText());
             const sequence = new Sequence(this.sequenceName(), this.sequenceConditionText(), commands);
+            this.targetSequenceState.set({
+                lbs: this.targetBaseSpeed(),
+                rbs: this.targetBaseSpeed(),
+                pitch: this.targetBasePitch(),
+                sway: this.targetBaseSway(),
+            })
             this.sequenceError.set(undefined);
             this.currentSequence.set(sequence);
             sequence.start();

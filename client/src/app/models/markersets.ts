@@ -44,10 +44,10 @@ export const pluginGaitMarkers: Marker[] = [
   { name: "Right Finger", abbreviation: "RFIN", description: "Direkt unterhalb des mittleren Fingergelenks", landmark: "Metakarpophalangeal-Gelenk", section: "arm right" },
 
   // PELVIS
-  { name: "Left ASIS", abbreviation: "LASI", description: "Linker anterior superior iliac spine", landmark: "Spina iliaca anterior superior", section: "hip front" },
-  { name: "Right ASIS", abbreviation: "RASI", description: "Rechter anterior superior iliac spine", landmark: "Spina iliaca anterior superior", section: "hip front" },
   { name: "Left PSIS", abbreviation: "LPSI", description: "Linker posterior superior iliac spine (direkt unterhalb der Iliosakralgelenke, wo die Wirbelsäule auf das Becken trifft)", landmark: "Spina iliaca posterior superior", section: "hip back" },
   { name: "Right PSIS", abbreviation: "RPSI", description: "Rechter posterior superior iliac spine (direkt unterhalb der Iliosakralgelenke, wo die Wirbelsäule auf das Becken trifft)", landmark: "Spina iliaca posterior superior", section: "hip back" },
+  { name: "Left ASIS", abbreviation: "LASI", description: "Linker anterior superior iliac spine", landmark: "Spina iliaca anterior superior", section: "hip front" },
+  { name: "Right ASIS", abbreviation: "RASI", description: "Rechter anterior superior iliac spine", landmark: "Spina iliaca anterior superior", section: "hip front" },
 
   // LEFT LEG
   { name: "Left Thigh", abbreviation: "LTHI", description: "Auf dem äußeren unteren Drittel des linken Oberschenkels", landmark: "Femurschaft", section: "leg left" },
@@ -107,13 +107,13 @@ export const hbm2Markers: Marker[] = [
   { name: "Left Forearm", abbreviation: "LFRM", description: "Mitte zwischen LLEE und LMW", landmark: "Midpoint LLEE–LMW", section: "arm left", initOnly: false },
   { name: "Left Fingers", abbreviation: "LFIN", description: "Zentrum der Hand (Metakarpale 3)", landmark: "Caput metacarpal 3", section: "arm left", initOnly: false },
 
-  // Hüfte vorne
-  { name: "Left ASIS", abbreviation: "LASIS", description: "Linke vordere obere Darmbeinstachel", landmark: "Left anterior superior iliac spine", section: "hip front", initOnly: false },
-  { name: "Right ASIS", abbreviation: "RASIS", description: "Rechte vordere obere Darmbeinstachel", landmark: "Right anterior superior iliac spine", section: "hip front", initOnly: false },
-
   // Hüfte hinten
   { name: "Left PSIS", abbreviation: "LPSIS", description: "Linke hintere obere Darmbeinstachel", landmark: "Left posterior superior iliac spine", section: "hip back", initOnly: false },
   { name: "Right PSIS", abbreviation: "RPSIS", description: "Rechte hintere obere Darmbeinstachel", landmark: "Right posterior superior iliac spine", section: "hip back", initOnly: false },
+
+  // Hüfte vorne
+  { name: "Left ASIS", abbreviation: "LASIS", description: "Linke vordere obere Darmbeinstachel", landmark: "Left anterior superior iliac spine", section: "hip front", initOnly: false },
+  { name: "Right ASIS", abbreviation: "RASIS", description: "Rechte vordere obere Darmbeinstachel", landmark: "Right anterior superior iliac spine", section: "hip front", initOnly: false },
 
   // Rechtes Bein
   { name: "Right Thigh (Lateral)", abbreviation: "RLTHI", description: "Mitte zwischen Trochanter major und Knie", landmark: "Midpoint hip–knee", section: "leg right", initOnly: false },
@@ -122,7 +122,6 @@ export const hbm2Markers: Marker[] = [
   { name: "Right Shank (Lateral)", abbreviation: "RLSHA", description: "Mitte zwischen Knie und Sprunggelenk", landmark: "Midpoint knee–ankle", section: "leg right", initOnly: false },
   { name: "Right Lateral Malleolus", abbreviation: "RLM", description: "Außenseite Sprunggelenk", landmark: "Lateral malleolus", section: "leg right", initOnly: false },
   { name: "Right Medial Malleolus", abbreviation: "RMM", description: "Innenseite Sprunggelenk (optional)", landmark: "Medial malleolus", section: "leg right", initOnly: true },
-  { name: "Right Heel", abbreviation: "RHEE", description: "Zentrum der Ferse", landmark: "Center of heel", section: "leg right", initOnly: false },
   { name: "Right 2nd Metatarsal", abbreviation: "RMT2", description: "Kopf des 2. Mittelfußknochens", landmark: "2nd metatarsal head", section: "leg right", initOnly: false },
   { name: "Right 5th Metatarsal", abbreviation: "RMT5", description: "Kopf des 5. Mittelfußknochens", landmark: "5th metatarsal head", section: "leg right", initOnly: false },
 
@@ -133,7 +132,9 @@ export const hbm2Markers: Marker[] = [
   { name: "Left Shank (Lateral)", abbreviation: "LLSHA", description: "Mitte zwischen Knie und Sprunggelenk", landmark: "Midpoint knee–ankle", section: "leg left", initOnly: false },
   { name: "Left Lateral Malleolus", abbreviation: "LLM", description: "Außenseite Sprunggelenk", landmark: "Lateral malleolus", section: "leg left", initOnly: false },
   { name: "Left Medial Malleolus", abbreviation: "LMM", description: "Innenseite Sprunggelenk (optional)", landmark: "Medial malleolus", section: "leg left", initOnly: true },
-  { name: "Left Heel", abbreviation: "LHEE", description: "Zentrum der Ferse", landmark: "Center of heel", section: "leg left", initOnly: false },
   { name: "Left 2nd Metatarsal", abbreviation: "LMT2", description: "Kopf des 2. Mittelfußknochens", landmark: "2nd metatarsal head", section: "leg left", initOnly: false },
-  { name: "Left 5th Metatarsal", abbreviation: "LMT5", description: "Kopf des 5. Mittelfußknochens", landmark: "5th metatarsal head", section: "leg left", initOnly: false }
+  { name: "Left 5th Metatarsal", abbreviation: "LMT5", description: "Kopf des 5. Mittelfußknochens", landmark: "5th metatarsal head", section: "leg left", initOnly: false },
+
+  { name: "Right Heel", abbreviation: "RHEE", description: "Zentrum der Ferse", landmark: "Center of heel", section: "foot back", initOnly: false },
+  { name: "Left Heel", abbreviation: "LHEE", description: "Zentrum der Ferse", landmark: "Center of heel", section: "foot back", initOnly: false },
 ];

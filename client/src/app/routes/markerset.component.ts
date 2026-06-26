@@ -36,17 +36,22 @@ export type Section = {
     <div class="divider"></div>
     <h2 class="text-xl font-bold capitalize tracking-wide">{{ currentSection().title }}</h2>
     <section class="flex flex-col gap-2 p-1 overflow-y-auto flex-1 pr-1">
-        @for (marker of sectionMarkers(); track $index) {
+        @for (item of sectionMarkers(); track $index) {
             <article
-                class="rounded-xl px-4 py-3 flex flex-col gap-0.5 cursor-pointer transition-colors"
-                [class]="selectedMarker() === marker.abbreviation
+                class="rounded-xl px-4 py-3 flex items-center gap-3 cursor-pointer transition-colors"
+                [class]="selectedMarker() === item.marker.abbreviation
                     ? 'bg-primary/20 ring-2 ring-primary'
                     : 'bg-base-100/70 hover:bg-base-100'"
-                (click)="selectedMarker.set(selectedMarker() === marker.abbreviation ? null : marker.abbreviation)"
+                (click)="selectedMarker.set(selectedMarker() === item.marker.abbreviation ? null : item.marker.abbreviation)"
             >
-                <h3 class="text-sm font-bold text-primary">{{ marker.abbreviation }}</h3>
-                <small class="text-xs font-medium text-base-content/70">{{ marker.name }}</small>
-                <p class="text-xs text-base-content/50 leading-snug">{{ marker.description }}</p>
+                <div class="flex items-ceter justify-center rounded-full border-3 border-primary text-primary w-8 h-8 flex-shrink-0 font-semibold">
+                    {{ item.idx + 1 }}
+                </div>
+                <div class="flex flex-col gap-0.5">
+                    <h3 class="text-sm font-bold text-primary">{{ item.marker.abbreviation }}</h3>
+                    <small class="text-xs font-medium text-base-content/70">{{ item.marker.name }}</small>
+                    <p class="text-xs text-base-content/50 leading-snug">{{ item.marker.description }}</p>
+                </div>
             </article>
         }
     </section>
@@ -69,8 +74,8 @@ export type Section = {
 })
 export class MarkersetComponent {
     options = [
-        { title: "Human Body Model 2 (Motek)", short: "HBM2", markers: hbm2Markers },
-        { title: "Plug-In Gait (Vicon)", short: "PiG", markers: pluginGaitMarkers },
+        { title: "Human Body Model 2 (Motek)", short: "HBM2", markers: hbm2Markers.map((marker, idx) => ({ marker, idx })) },
+        { title: "Plug-In Gait (Vicon)", short: "PiG", markers: pluginGaitMarkers.map((marker, idx) => ({ marker, idx })) },
     ];
     markerset = signal(this.options[0]);
     markersetname = computed(() => this.markerset().short.toLowerCase() as MarkerSetName);
@@ -93,7 +98,7 @@ export class MarkersetComponent {
     currentSection = signal<Section>(this.sections[0]);
     previousSection = computed(() => this.sections[(this.sections.indexOf(this.currentSection()) + this.sections.length - 1) % this.sections.length]);
     nextSection = computed(() => this.sections[(this.sections.indexOf(this.currentSection()) + 1) % this.sections.length]);
-    sectionMarkers = computed(() => this.markers().filter(marker => marker.section == this.currentSection().name));
+    sectionMarkers = computed(() => this.markers().filter(({ marker }) => marker.section == this.currentSection().name));
     markers = computed(() => this.markerset().markers);
 
     onclick() {
